@@ -1,0 +1,40 @@
+# Ignorar arquivos e pastas de build padrão do CLion e CMake
+cmake-build-*/
+.idea/
+*.iml
+CMakeFiles/
+CMakeCache.txt
+Makefile
+cmake_install.cmake
+compile_commands.json
+
+# Arquivos de log e temporários
+*.log
+*.tmp
+*.temp
+*.swp
+*.DS_Store
+*.user
+*.sublime-workspace
+*.sublime-project
+
+# Arquivos binários
+*.o
+*.obj
+*.so
+*.a
+*.out
+*.exe
+
+# Backups e arquivos do sistema
+*.bak
+*.old
+Thumbs.db
+ehthumbs.db
+desktop.ini
+
+# Pastas de cache ou dependências locais
+.cache/
+build/
+out/
+bin/
