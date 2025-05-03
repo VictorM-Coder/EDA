@@ -1,7 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <sstream>
-#include "Set.h"  // Supondo que você tenha a classe Set definida aqui
+#include "Set.h"
 
 using namespace std;
 
