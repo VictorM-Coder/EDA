@@ -65,6 +65,33 @@ public:
     void show() {
         _show(root, "");
     }
+
+    Set* set_union(Set* other) {
+        Set* result = new Set();
+
+        _addAllElements(this->root, result);
+        _addAllElements(other->root, result);
+
+        return result;
+    }
+
+    Set* intersection(Set* other) {
+        Set* result = new Set();
+
+        if (this->empty() || other->empty()) {
+            return result;
+        }
+
+        _intersection(this->root, other, result);
+        return result;
+    }
+
+    Set* difference(Set* other) {
+        Set* result = new Set();
+        _difference(this->root, other, result);
+        return result;
+    }
+
 private:
     Node* root;
 
@@ -300,6 +327,59 @@ private:
         if(node != nullptr && (node->left != nullptr || node->right != nullptr))
             _show(node->left, heranca + "l");
     }
+
+    void _intersection(Node* node, Set* other, Set* result) {
+        if (node == nullptr) {
+            return;
+        }
+
+        _intersection(node->left, other, result);
+        if (other->contains(node->key)) {
+            result->insert(node->key);
+        }
+        _intersection(node->right, other, result);
+    }
+
+    void _difference(Node* node, Set* other, Set* result) {
+        if (node == nullptr) {
+            return;
+        }
+
+        _difference(node->left, other, result);
+        if (!other->contains(node->key)) {
+            result->insert(node->key);
+        }
+        _difference(node->right, other, result);
+    }
+
+    void _addAllElements(Node* node, Set* resultSet) {
+        if (node == nullptr) {
+            return;
+        }
+
+        _addAllElements(node->left, resultSet);
+        resultSet->insert(node->key);
+        _addAllElements(node->right, resultSet);
+    }
+
+    vector<int> _toVector() {
+        vector<int> v;
+
+        _addToVector(root, v);
+        return v;
+    }
+
+    void _addToVector(Node* node, vector<int>& v) {
+        if (node == nullptr) {
+            return;
+        }
+
+        _addToVector(node->left, v);
+        v.push_back(node->key);
+        _addToVector(node->right, v);
+    }
+
+
 };
 
 #endif

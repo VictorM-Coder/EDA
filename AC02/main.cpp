@@ -26,6 +26,9 @@ void mostrar_menu(const vector<Set*>& conjuntos, int indice_atual) {
     cout << "13. Trocar dados entre dois conjuntos\n";
     cout << "14. Inserir lista de elementos\n";
     cout << "15. Mostrar conjunto atual\n";
+    cout << "16. Unir dois conjuntos\n";
+    cout << "17. Intersecao entre dois conjuntos\n";
+    cout << "18. Diferenca entre dois conjuntos\n";
     cout << " 0. Sair\n";
     cout << "Opcao: ";
 }
@@ -204,6 +207,48 @@ int main() {
                 }
                 cout << "Conjunto " << indice_atual << ": \n";
                 conjuntos[indice_atual]->show();
+                break;
+
+            case 16:
+                cout << "Digite os indices dos conjuntos a serem unidos (i1 i2): ";
+                cin >> indice1 >> indice2;
+                if (indice1 >= 0 && indice1 < (int)conjuntos.size() &&
+                    indice2 >= 0 && indice2 < (int)conjuntos.size()) {
+                    Set* novo = conjuntos[indice1]->set_union(conjuntos[indice2]);
+                    conjuntos.push_back(novo);
+                    indice_atual = conjuntos.size() - 1;
+                    cout << "Conjunto unido criado com indice " << indice_atual << ".\n";
+                    } else {
+                        cout << "Indices invalidos.\n";
+                    }
+                break;
+
+            case 17:
+                cout << "Digite os indices dos conjuntos a serem interseccionado (i1 i2): ";
+                cin >> indice1 >> indice2;
+                if (indice1 >= 0 && indice1 < (int)conjuntos.size() &&
+                    indice2 >= 0 && indice2 < (int)conjuntos.size()) {
+                    Set* novo = conjuntos[indice1]->intersection(conjuntos[indice2]);
+                    conjuntos.push_back(novo);
+                    indice_atual = conjuntos.size() - 1;
+                    cout << "Conjunto interseção criado com indice " << indice_atual << ".\n";
+                    } else {
+                        cout << "Indices invalidos.\n";
+                    }
+                break;
+
+            case 18:
+                cout << "Digite os indices dos conjuntos a ser calculada a diferenca (i1 i2): ";
+                cin >> indice1 >> indice2;
+                if (indice1 >= 0 && indice1 < (int)conjuntos.size() &&
+                    indice2 >= 0 && indice2 < (int)conjuntos.size()) {
+                    Set* novo = conjuntos[indice1]->difference(conjuntos[indice2]);
+                    conjuntos.push_back(novo);
+                    indice_atual = conjuntos.size() - 1;
+                    cout << "Conjunto diferenca criado com indice " << indice_atual << ".\n";
+                    } else {
+                        cout << "Indices invalidos.\n";
+                    }
                 break;
 
             case 0:
