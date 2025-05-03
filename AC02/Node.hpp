@@ -11,13 +11,8 @@ struct Node {
         this->key = k;
         this->left = nullptr;
         this->right = nullptr;
+        this->height = 1;
     }
-//    Node(int k, int height) {
-//        this->key = k;
-//        this->height = height;
-//        this->left = nullptr;
-//        this->right = nullptr;
-//    }
 };
 
 #endif //AC02_NODE_HPP

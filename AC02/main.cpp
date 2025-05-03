@@ -1,61 +1,33 @@
 #include <iostream>
 #include <vector>
 #include <sstream>
-#include "Set.h"  // Certifique-se que a classe Set tem o método show()
+#include "Set.h"  // Supondo que você tenha a classe Set definida aqui
 
 using namespace std;
 
-Set* readSet() {
-    Set* set = new Set();
-    int totalNodes;
-    cin >> totalNodes;
-    cin.ignore();  // consumir \n
-
-    string keysString;
-    getline(cin, keysString);
-
-    istringstream iss(keysString);
-    int key;
-    while (iss >> key) {
-        set->insert(key);
-    }
-
-    return set;
-}
-
 void mostrar_menu(const vector<Set*>& conjuntos, int indice_atual) {
-    cout << "\n======= MENU ARVORE BST =======\n";
+    cout << "\n==== MENU ====\n";
+    cout << "Conjuntos existentes: " << conjuntos.size();
+    if (indice_atual != -1) cout << " | Atual: " << indice_atual;
+    cout << "\n\n";
 
-    cout << "Conjuntos disponiveis:\n";
-    if (conjuntos.empty()) {
-        cout << "(nenhum conjunto criado ainda)\n";
-    } else {
-        for (size_t i = 0; i < conjuntos.size(); ++i) {
-            cout << "Conjunto " << i;
-            if ((int)i == indice_atual) {
-                cout << " <-- selecionado";
-            }
-            cout << "\n";
-        }
-    }
-
-    cout << "\nOpcoes:\n";
-    cout << "1. Criar novo conjunto\n";
-    cout << "2. Selecionar conjunto atual\n";
-    cout << "3. Inserir elemento\n";
-    cout << "4. Remover elemento\n";
-    cout << "5. Verificar se contem elemento\n";
-    cout << "6. Mostrar menor elemento\n";
-    cout << "7. Mostrar maior elemento\n";
-    cout << "8. Mostrar sucessor\n";
-    cout << "9. Mostrar altura\n";
-    cout << "10. Verificar se esta vazio\n";
-    cout << "11. Limpar conjunto\n";
-    cout << "12. Trocar dois conjuntos\n";
-    cout << "13. Inserir lista de elementos\n";
-    cout << "14. Visualizar conjunto atual\n";
-    cout << "0. Sair\n";
-    cout << "Escolha uma opcao: ";
+    cout << " 1. Criar novo conjunto\n";
+    cout << " 2. Selecionar conjunto atual\n";
+    cout << " 3. Inserir elemento\n";
+    cout << " 4. Remover elemento\n";
+    cout << " 5. Verificar se contem elemento\n";
+    cout << " 6. Mostrar minimo\n";
+    cout << " 7. Mostrar maximo\n";
+    cout << " 8. Mostrar sucessor\n";
+    cout << " 9. Mostrar predecessor\n";
+    cout << "10. Mostrar altura\n";
+    cout << "11. Verificar se esta vazio\n";
+    cout << "12. Limpar conjunto\n";
+    cout << "13. Trocar dados entre dois conjuntos\n";
+    cout << "14. Inserir lista de elementos\n";
+    cout << "15. Mostrar conjunto atual\n";
+    cout << " 0. Sair\n";
+    cout << "Opcao: ";
 }
 
 int main() {
@@ -161,7 +133,13 @@ int main() {
                     cout << "Nenhum conjunto selecionado.\n";
                     break;
                 }
-                cout << "Altura: " << conjuntos[indice_atual]->height() << "\n";
+                cout << "Valor para encontrar predecessor: ";
+                cin >> valor;
+                try {
+                    cout << "Predecessor: " << conjuntos[indice_atual]->predecessor(valor) << "\n";
+                } catch (...) {
+                    cout << "Erro ao obter predecessor.\n";
+                }
                 break;
 
             case 10:
@@ -169,10 +147,18 @@ int main() {
                     cout << "Nenhum conjunto selecionado.\n";
                     break;
                 }
-                cout << (conjuntos[indice_atual]->empty() ? "Esta vazio.\n" : "Nao esta vazio.\n");
+                cout << "Altura: " << conjuntos[indice_atual]->height() << "\n";
                 break;
 
             case 11:
+                if (indice_atual == -1) {
+                    cout << "Nenhum conjunto selecionado.\n";
+                    break;
+                }
+                cout << (conjuntos[indice_atual]->empty() ? "Esta vazio.\n" : "Nao esta vazio.\n");
+                break;
+
+            case 12:
                 if (indice_atual == -1) {
                     cout << "Nenhum conjunto selecionado.\n";
                     break;
@@ -181,7 +167,7 @@ int main() {
                 cout << "Conjunto limpo.\n";
                 break;
 
-            case 12:
+            case 13:
                 cout << "Digite os indices dos conjuntos para trocar (i1 i2): ";
                 cin >> indice1 >> indice2;
                 if (indice1 >= 0 && indice1 < (int)conjuntos.size() &&
@@ -193,12 +179,12 @@ int main() {
                 }
                 break;
 
-            case 13:
+            case 14:
                 if (indice_atual == -1) {
                     cout << "Nenhum conjunto selecionado.\n";
                     break;
                 }
-                cin.ignore(); // limpa o \n anterior
+                cin.ignore();
                 cout << "Digite os elementos separados por espaco: ";
                 {
                     string linha;
@@ -211,7 +197,7 @@ int main() {
                 }
                 break;
 
-            case 14:
+            case 15:
                 if (indice_atual == -1) {
                     cout << "Nenhum conjunto selecionado.\n";
                     break;

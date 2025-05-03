@@ -23,30 +23,25 @@ public:
         root = _remove(root, x);
     }
 
-    //TODO testar
     bool contains(int x) {
         return _contains(x, root);
     }
 
-    //Todo testar
     void clear() {
         _clear(root);
         root = nullptr;
     }
 
-    //Todo testar
     void swap(Set* t) {
         Node* myRoot = root;
         root = t->root;
         t->root = myRoot;
     }
 
-    //Todo testar
     int minimum() {
         return _minimum(root);
     }
 
-    //Todo  testar
     int maximum() {
         return _maximum(root);
     }
@@ -57,6 +52,10 @@ public:
 
     int successor(int x) {
         return _sucessor(root, x);
+    }
+
+    int predecessor(int x) {
+        return _predecessor(root, x);
     }
 
     int height() {
@@ -166,7 +165,7 @@ private:
                 } else if (sucessor != nullptr) {
                     return sucessor->key;
                 } else {
-                    throw "No successor found";
+                    throw "No predecessor found";
                 }
             }
         }
@@ -210,14 +209,17 @@ private:
     Node* _fixup_node(Node* node, int key) {
         int balance = _balance(node);
 
-        if (balance < -1 && key < node->left->key) {
+        if (balance == -2 && key < node->left->key) {
             return _right_rotation(node);
-        } else if (balance < -1 && key > node->left->key) {
+        }
+        if (balance == -2 && key > node->left->key) {
             node->left = _left_rotation(node->left);
             return _right_rotation(node);
-        } else if (balance > 1 && key > node->right->key) {
+        }
+        if (balance == 2 && key > node->right->key) {
             return _left_rotation(node);
-        } else if (balance > 1 && key < node->right->key) {
+        }
+        if (balance == 2 && key < node->right->key) {
             node->right = _right_rotation(node);
             return _left_rotation(node);
         }
@@ -229,14 +231,17 @@ private:
     Node* fixup_deletion(Node* node) {
         int balance = _balance(node);
 
-        if (balance > 1 && _balance(node->right) > 0) {
+        if (balance > 1 && _balance(node->right) >= 0) {
             return _left_rotation(node);
-        } else if (balance > 1 && _balance(node->right) < 0) {
+        }
+         if (balance > 1 && _balance(node->right) < 0) {
             node->right = _right_rotation(node->right);
             return _left_rotation(node);
-        } else if (balance < -1 && _balance(node->left) > 0) {
+        }
+        if (balance < -1 && _balance(node->left) <= 0) {
             return _right_rotation(node);
-        } else if (balance < -1 && _balance(node->left) < 0) {
+        }
+        if (balance < -1 && _balance(node->left) > 0) {
             node->left = _left_rotation(node->left);
             return _right_rotation(node);
         }
