@@ -29,6 +29,7 @@ void mostrar_menu(const vector<Set*>& conjuntos, int indice_atual) {
     cout << "16. Unir dois conjuntos\n";
     cout << "17. Intersecao entre dois conjuntos\n";
     cout << "18. Diferenca entre dois conjuntos\n";
+    cout << "19. Tamanho do conjunto\n";
     cout << " 0. Sair\n";
     cout << "Opcao: ";
 }
@@ -249,6 +250,14 @@ int main() {
                     } else {
                         cout << "Indices invalidos.\n";
                     }
+                break;
+
+            case 19:
+                if (indice_atual == -1) {
+                    cout << "Nenhum conjunto selecionado.\n";
+                    break;
+                }
+                cout << "Tamanho: " << conjuntos[indice_atual]->size() << "\n";
                 break;
 
             case 0:

@@ -62,6 +62,10 @@ public:
         return _height(root);
     }
 
+    int size() {
+        return _size(root);
+    }
+
     void show() {
         _show(root, "");
     }
@@ -379,7 +383,12 @@ private:
         _addToVector(node->right, v);
     }
 
-
+    int _size(Node *node) const {
+        if (node != nullptr) {
+            return 1 + _size(node->left) + _size(node->right);
+        }
+        return 0;
+    }
 };
 
 #endif
