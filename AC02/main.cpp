@@ -215,7 +215,7 @@ int main() {
                 cin >> indice1 >> indice2;
                 if (indice1 >= 0 && indice1 < (int)conjuntos.size() &&
                     indice2 >= 0 && indice2 < (int)conjuntos.size()) {
-                    Set* novo = conjuntos[indice1]->set_union(conjuntos[indice2]);
+                    Set* novo = conjuntos[indice1]->merge_avl(conjuntos[indice1], conjuntos[indice2]);
                     conjuntos.push_back(novo);
                     indice_atual = conjuntos.size() - 1;
                     cout << "Conjunto unido criado com indice " << indice_atual << ".\n";
