@@ -96,6 +96,17 @@ public:
         return result;
     }
 
+    Set* merge_avl(Set* avl1, Set* avl2) {
+        vector<int> v1 = avl1->_toVector();
+        vector<int> v2 = avl2->_toVector();
+
+        vector<int> v3 = merge_arrays(v1, v2);
+        Set* set = new Set();
+        set->root = vector_to_avl(v3, 0, v3.size()-1);
+
+        return set;
+    }
+
 private:
     Node* root;
 
@@ -366,13 +377,6 @@ private:
         _addAllElements(node->right, resultSet);
     }
 
-    vector<int> _toVector() {
-        vector<int> v;
-
-        _addToVector(root, v);
-        return v;
-    }
-
     void _addToVector(Node* node, vector<int>& v) {
         if (node == nullptr) {
             return;
@@ -388,6 +392,58 @@ private:
             return 1 + _size(node->left) + _size(node->right);
         }
         return 0;
+    }
+
+    vector<int> _toVector() {
+        vector<int> v;
+
+        _addToVector(root, v);
+        return v;
+    }
+
+
+    vector<int> merge_arrays(vector<int> v1, vector<int> v2) {
+        int index1 = 0;
+        int index2 = 0;
+        vector<int> merged;
+
+        while (index1 < v1.size() && index2 < v2.size()) {
+            if (v1.at(index1) == v2.at(index2)) {
+                merged.push_back(v1.at(index1));
+                index1++;
+                index2++;
+            } else if (v1.at(index1) < v2.at(index2)) {
+                merged.push_back(v1.at(index1));
+                index1++;
+            } else {
+                merged.push_back(v2.at(index2));
+                index2++;
+            }
+        }
+
+        while (index1 < v1.size()) {
+            merged.push_back(v1.at(index1));
+            index1++;
+        }
+
+        while (index2 < v2.size()) {
+            merged.push_back(v2.at(index2));
+            index2++;
+        }
+        return merged;
+    }
+
+    Node* vector_to_avl(vector<int> array, int start, int end) {
+        if (start > end) {
+            return nullptr;
+        }
+
+        int index =  (end+start)/2;
+        Node* node = new Node(array[index]);
+        node->right = vector_to_avl(array, index+1, end);
+        node->left = vector_to_avl(array, start, index-1);
+        node->height = 1 + max(_height(node->left), _height(node->right));
+        return node;
     }
 };
 
