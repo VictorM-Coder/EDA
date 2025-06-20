@@ -26,7 +26,6 @@ struct RB_Node {
 
     RB_Node(const pair<string, size_t> &item_pair, bool color, const int height) {
         this->key = item_pair.first;
-        this->height = height;
         this->count = item_pair.second;
         this->color = color;
 
