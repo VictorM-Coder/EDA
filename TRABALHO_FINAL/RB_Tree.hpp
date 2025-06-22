@@ -18,8 +18,8 @@ public:
         _root->parent = NIL;
     }
 
-    ~RB_Tree() {
-        clear();
+    ~RB_Tree() override {
+        RB_Tree::clear();
     }
 
     void insert(string key) override {
