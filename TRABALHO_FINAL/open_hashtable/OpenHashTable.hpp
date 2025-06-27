@@ -1,6 +1,7 @@
 #pragma once
 #include <cmath>
 
+#include "OpenHash_Iterator.hpp"
 #include "Slot.hpp"
 #include "../IDataStruct.hpp"
 
@@ -31,14 +32,14 @@ public:
         _table_size = _get_next_prime(pairs.size());
         _table.resize(_table_size);
 
-        for (int i = 0; i < pairs.size(); i++) {
-            _insert(pairs[i].first, pairs[i].second);
-        }
-
         if(load_factor <= 0) {
             _max_load_factor = 1.0;
         } else {
             _max_load_factor = load_factor;
+        }
+
+        for (int i = 0; i < pairs.size(); i++) {
+            _insert(pairs[i].first, pairs[i].second);
         }
     }
 
@@ -46,7 +47,6 @@ public:
         _insert(key);
     }
 
-    //OK
     void update(string key, size_t value) override {
         int slot = _find_slot(key);
         if (slot == -1) {
@@ -55,7 +55,6 @@ public:
         _table[slot].value = value;
     }
 
-    //OK
     pair<string, size_t> get(string key) override {
         int slot = _find_slot(key);
         if (slot == -1) {
@@ -68,23 +67,19 @@ public:
         return my_pair;
     }
 
-    //OK
     void remove(string key) override {
         _remove(key);
     }
 
-    //OK
     bool exists(string key) override {
         int slot = _find_slot(key);
         return slot > -1;
     }
 
-    //TODO iterator
-    // ChainedIterator iterator() {
-    //     return ChainedIterator(_table);
-    // }
+     Iterator iterator() override {
+         return OpenHashIterator(_table);
+     }
 
-    //OK
     size_t size() override {
         return _number_of_elements;
     }
@@ -103,65 +98,28 @@ private:
         return _table[slot].value;
     }
 
-    bool _insert(const string &key) {
+    bool _insert(const string &key, size_t value = 1) {
         if (_calc_load_factor() >= _max_load_factor) {
-            _rehash(2*_table_size);
+            _rehash(2 * _table_size);
         }
 
         int slot = _find_slot(key);
 
         //Aumenta a contagem se já existir uma chave
         if (slot != -1) {
-            _table[slot].value++;
+            _table[slot].value += value;
             return true;
         }
 
-        size_t index = 0;
-        while (index < _table_size) {
-            size_t possible_slot = _calc_hash_code(key, index);
-
+        for (size_t i = 0; i < _table_size; ++i) {
+            size_t possible_slot = _calc_hash_code(key, i);
             //Adiciona uma nova chave na tabela
             if (_table[possible_slot].status != ACTIVE) {
-                _table[possible_slot].key = key;
-                _table[possible_slot].status = ACTIVE;
-                _table[possible_slot].value = 1;
+                _table[possible_slot] = Slot(key, ACTIVE, value);
                 _number_of_elements++;
                 return true;
             }
-            index++;
         }
-        //Retorna false se não conseguir inserir
-        return false;
-    }
-
-    bool _insert(const string &key, const size_t value) {
-        if (_calc_load_factor() >= _max_load_factor) {
-            _rehash(2*_table_size);
-        }
-
-        int slot = _find_slot(key);
-
-        //Aumenta a contagem se já existir uma chave
-        if (slot != -1) {
-            _table[slot].value++;
-            return true;
-        }
-
-        size_t index = 0;
-        while (index < _table_size) {
-            size_t possible_slot = _calc_hash_code(key, index);
-
-            //Adiciona uma nova chave na tabela
-            if (_table[possible_slot].status != ACTIVE) {
-                _table[possible_slot].key = key;
-                _table[possible_slot].status = ACTIVE;
-                _table[possible_slot].value = value;
-                _number_of_elements++;
-                return true;
-            }
-            index++;
-        }
-        //Retorna false se não conseguir inserir
         return false;
     }
 

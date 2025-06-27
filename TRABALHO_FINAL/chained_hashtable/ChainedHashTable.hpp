@@ -42,14 +42,14 @@ public:
         _table_size = _get_next_prime(pairs.size());
         _table.resize(_table_size);
 
-        for (int i = 0; i < pairs.size(); i++) {
-            _insert(pairs[i].first, pairs[i].second);
-        }
-
         if(load_factor <= 0) {
             _max_load_factor = 1.0;
         } else {
             _max_load_factor = load_factor;
+        }
+
+        for (int i = 0; i < pairs.size(); i++) {
+            _insert(pairs[i].first, pairs[i].second);
         }
     }
 

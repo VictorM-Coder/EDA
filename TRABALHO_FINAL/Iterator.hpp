@@ -6,5 +6,5 @@ class Iterator {
 public:
     virtual ~Iterator() = default;
     virtual bool hasNext() const = 0;
-    virtual pair<string, size_t> next() = 0;
+    virtual std::pair<std::string, size_t> next() = 0;
 };

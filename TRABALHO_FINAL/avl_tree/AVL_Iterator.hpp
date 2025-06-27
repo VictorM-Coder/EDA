@@ -1,5 +1,7 @@
 #pragma once
 #include <stack>
+#include <string>
+#include <utility>
 
 #include "AVLNode.hpp"
 #include "../Iterator.hpp"

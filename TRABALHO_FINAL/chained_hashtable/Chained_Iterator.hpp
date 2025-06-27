@@ -1,6 +1,8 @@
 #pragma once
 #include <list>
 #include <vector>
+#include <string>
+#include <utility>
 
 #include "../Iterator.hpp"
 
