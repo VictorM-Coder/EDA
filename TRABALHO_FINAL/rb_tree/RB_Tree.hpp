@@ -1,7 +1,8 @@
 #pragma once
 #include <complex>
 
-#include "IDataStruct.hpp"
+#include "RB_Iterator.hpp"
+#include "../IDataStruct.hpp"
 #include "RB_Node.hpp"
 
 class RB_Tree: public IDataStruct{
@@ -54,7 +55,9 @@ public:
         return _get(key) != NIL;
     }
 
-    //TODO iterador
+    RB_Iterator iterator() override {
+        return RB_Iterator(_root);
+    }
 
     size_t size() override {
         return _size(_root);

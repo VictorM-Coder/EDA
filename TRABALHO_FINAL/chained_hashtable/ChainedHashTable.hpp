@@ -3,7 +3,8 @@
 #include <stdexcept>
 #include <bits/valarray_after.h>
 
-#include "IDataStruct.hpp"
+#include "Chained_Iterator.hpp"
+#include "../IDataStruct.hpp"
 
 
 class ChainedHashTable :  public IDataStruct {
@@ -79,7 +80,10 @@ public:
         }
     }
 
-    //TODO iterador
+    ChainedIterator iterator() {
+        return ChainedIterator(_table);
+    }
+
     size_t size() override {
         return _number_of_elements;
     }

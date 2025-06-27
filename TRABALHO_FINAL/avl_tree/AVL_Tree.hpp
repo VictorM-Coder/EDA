@@ -1,9 +1,9 @@
 #pragma once
 #include "AVLNode.hpp"
-#include "IDataStruct.hpp"
+#include "AVL_Iterator.hpp"
+#include "../IDataStruct.hpp"
 
 class AVL_Tree : public IDataStruct {
-private:
     AVL_Node* _root;
 
 public:
@@ -52,7 +52,10 @@ public:
     bool exists(string key) {
         return _get(key, _root) != nullptr;
     }
-    //TODO iterador
+
+    AVL_Iterator iterator() {
+        return AVL_Iterator(_root);
+    }
 
     size_t size() {
         return _size(_root);

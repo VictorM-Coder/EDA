@@ -15,7 +15,7 @@ public:
     virtual pair<string, size_t> get(string);
     virtual void remove(string key);
     virtual bool exists(string key);
-    //TODO iterador
+    virtual Iterator iterador();
     virtual size_t size();
     virtual void clear();
 };

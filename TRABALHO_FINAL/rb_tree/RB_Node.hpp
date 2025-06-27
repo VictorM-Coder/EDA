@@ -20,6 +20,7 @@ struct RB_Node {
         this->color = color;
         this->count = 1;
 
+        this->parent = nullptr;
         this->left = nullptr;
         this->right = nullptr;
     }
