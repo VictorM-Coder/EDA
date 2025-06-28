@@ -53,8 +53,8 @@ public:
         return _get(key, _root) != nullptr;
     }
 
-    AVL_Iterator iterator() {
-        return AVL_Iterator(_root);
+    AVL_Iterator iterator() const {
+        return {_root};
     }
 
     size_t size() {

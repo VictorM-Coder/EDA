@@ -1,7 +1,6 @@
 #pragma once
 #include <list>
 #include <stdexcept>
-#include <bits/valarray_after.h>
 
 #include "Chained_Iterator.hpp"
 #include "../IDataStruct.hpp"
@@ -209,7 +208,7 @@ private:
         }
 
         size_t slot = _calc_hash_code(key);
-        for(auto p& : _table[slot]) {
+        for(auto &p : _table[slot]) {
             if(p.first == key) {
                 return;
             }

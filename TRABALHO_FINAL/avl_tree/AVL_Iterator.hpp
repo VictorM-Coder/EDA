@@ -23,7 +23,7 @@ public:
         return !_stack.empty();
     }
 
-    pair<string, size_t> next() override {
+    std::pair<std::string, size_t> next() override {
         AVL_Node* node = _stack.top();
         _stack.pop();
 

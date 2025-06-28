@@ -55,7 +55,7 @@ public:
         return _get(key) != NIL;
     }
 
-    RB_Iterator iterator() override {
+    RB_Iterator iterator() {
         return RB_Iterator(_root);
     }
 
@@ -74,7 +74,7 @@ private:
      * @param key
      * @return the Node with contains the key or NIL case key not exists
      */
-    RB_Node* _get(string key) {
+    RB_Node* _get(const string& key) const {
         RB_Node* node = _root;
         //FIND NODE
         while (node != NIL && node->key != key) {
@@ -87,7 +87,7 @@ private:
         return node;
     }
 
-   void _insert(string key) {
+   void _insert(const string& key) {
        RB_Node* x = _root;
        RB_Node* y = NIL;
 
@@ -103,7 +103,7 @@ private:
            }
        }
 
-       RB_Node* z = new RB_Node(key, RED);
+       auto* z = new RB_Node(key, RED);
        z->parent = y;
        if (y == NIL) {
            _root = z;
@@ -202,7 +202,7 @@ private:
        _root->color = BLACK;
    }
 
-    void _remove(string key) {
+    void _remove(const string& key) {
        RB_Node* node = _get(key);
 
        if (node != NIL) {
@@ -308,21 +308,21 @@ private:
        node->color = BLACK;
    }
 
-    RB_Node* _find_min(RB_Node* node) {
+    RB_Node* _find_min(RB_Node* node) const {
        while (node->left != NIL) {
            node = node->left;
        }
        return node;
    }
 
-    size_t _size(RB_Node* node) const {
+    size_t _size(const RB_Node* node) const {
         if (node != NIL) {
             return 1 + _size(node->left) + _size(node->right);
         }
         return 0;
     }
 
-    void _clear(RB_Node* node) {
+    void _clear(const RB_Node* node) {
         if (node != NIL) {
             _clear(node->left);
             _clear(node->right);

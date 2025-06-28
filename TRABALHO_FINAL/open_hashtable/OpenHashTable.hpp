@@ -76,7 +76,7 @@ public:
         return slot > -1;
     }
 
-     Iterator iterator() override {
+     OpenHashIterator iterator() {
          return OpenHashIterator(_table);
      }
 

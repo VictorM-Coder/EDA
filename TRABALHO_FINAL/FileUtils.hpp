@@ -6,12 +6,13 @@
 #include <unicode/unistr.h>
 #include <unicode/uchar.h>
 
+#include "Iterator.hpp"
+
 
 class FileUtils {
-private:
-    const size_t INIT_SIZE = 10000;
+    static constexpr size_t INIT_SIZE = 10000;
 public:
-    void readFile(const std::string& file_url) {
+    static std::vector<std::string> readFile(const std::string& file_url) {
         std::vector<std::string> words;
         words.reserve(INIT_SIZE);
 
@@ -20,32 +21,33 @@ public:
 
         if (!my_file) {
             std::cerr << "An error occurred while trying to read the file.\n";
-            return;
         }
 
         while (my_file >> word) {
             words.push_back(_clean_word(word));
         }
-        //TODO APENAS PARA TESTES
-        write_file(words);
+
+        return words;
     }
 
-    void write_file(const std::vector<std::string>& words) {
-        std::ofstream my_file("saida.txt");
+    static void write_file(Iterator& it, const std::string& name) {
+        std::ofstream my_file(name + ".txt");
 
         if (!my_file) {
             std::cerr << "An error occurred while trying to write the file." << std::endl;
             return;
         }
 
-        for (const auto& word : words) {
-            my_file << word << std::endl;
+        while (it.hasNext()) {
+            std::pair<std::string, size_t> word = it.next();
+            my_file << word.first << " " <<  word.second << std::endl;
         }
+
         my_file.close();
     }
 
 private:
-    std::string _clean_word(const std::string& input) {
+    static std::string _clean_word(const std::string& input) {
         // Converter UTF-8 para UnicodeString (UTF-16 interno)
         icu::UnicodeString ustr = icu::UnicodeString::fromUTF8(input);
 
