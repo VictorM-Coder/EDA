@@ -6,22 +6,27 @@
 #include "RB_Node.hpp"
 
 class RB_Tree: public IDataStruct{
-private:
     RB_Node* _root;
     RB_Node* NIL;
 
 public:
     RB_Tree() {
         NIL = new RB_Node("", BLACK);
+        NIL->left = NIL;
+        NIL->right = NIL;
+        NIL->parent = NIL;
         _root = NIL;
-        _root->left = NIL;
-        _root->right = NIL;
-        _root->parent = NIL;
     }
 
     ~RB_Tree() override {
         RB_Tree::clear();
+        delete NIL;
     }
+
+    void printTree() const {
+        _printTree(_root, "", true);
+    }
+
 
     void insert(string key) override {
         _insert(key);
@@ -56,7 +61,7 @@ public:
     }
 
     RB_Iterator iterator() {
-        return RB_Iterator(_root);
+        return RB_Iterator(_root, NIL);
     }
 
     size_t size() override {
@@ -65,7 +70,7 @@ public:
 
     void clear() override {
         _clear(_root);
-        delete NIL;
+        _root = NIL;
     }
 
 private:
@@ -159,7 +164,7 @@ private:
    }
 
     void _insert_fixup(RB_Node* node) {
-       while (node != _root && node->parent->color == RED) {
+       while (node->parent->color == RED) {
            if (node->parent == node->parent->parent->left) {
                RB_Node* aux = node->parent->parent->right;
                // CASE 1
@@ -188,7 +193,7 @@ private:
                    node->parent->parent->color = RED;
                    node = node->parent->parent;
                } else  {
-                   if (node == node->parent->right) { //CASE 2b
+                   if (node == node->parent->left) { //CASE 2b
                        node = node->parent;
                        _right_rotation(node);
                    }
@@ -322,11 +327,26 @@ private:
         return 0;
     }
 
-    void _clear(const RB_Node* node) {
-        if (node != NIL) {
-            _clear(node->left);
-            _clear(node->right);
-            delete node;
+    void _clear(RB_Node* node) {
+        if (node == NIL) {
+            return;
         }
+        _clear(node->left);
+        _clear(node->right);
+        delete node;
     }
+
+    void _printTree(RB_Node* node, const string& prefix, bool isLeft) const {
+        if (node == NIL) return;
+
+        cout << prefix;
+        cout << (isLeft ? "├──" : "└──");
+
+        // Mostra chave, cor e contagem
+        cout << node->key << " (" << (node->color == RED ? "R" : "B") << ", count=" << node->count << ")" << endl;
+
+        _printTree(node->left, prefix + (isLeft ? "│   " : "    "), true);
+        _printTree(node->right, prefix + (isLeft ? "│   " : "    "), false);
+    }
+
 };

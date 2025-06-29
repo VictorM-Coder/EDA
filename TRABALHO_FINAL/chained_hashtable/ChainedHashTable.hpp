@@ -47,8 +47,8 @@ public:
             _max_load_factor = load_factor;
         }
 
-        for (int i = 0; i < pairs.size(); i++) {
-            _insert(pairs[i].first, pairs[i].second);
+        for (const auto & pair : pairs) {
+            _insert(pair.first, pair.second);
         }
     }
 
@@ -100,7 +100,7 @@ private:
      * @param actual Número atual
      * @return Pŕoximo número primo
      */
-    size_t _get_next_prime(size_t actual) {
+    static size_t _get_next_prime(size_t actual) {
         if (actual <= 2) return 3;
 
         actual += (actual % 2 == 0);
@@ -167,11 +167,11 @@ private:
             //Atualizar valores antigos
             _number_of_elements = 0;
             _table_size = new_table_size;
-            for(size_t i = 0; i < old_vec.size(); ++i) {
-                for(auto& par : old_vec[i]) {
+            for(auto & i : old_vec) {
+                for(auto& par : i) {
                     _insert(par.first, par.second);
                 }
-                old_vec[i].clear(); // opcional
+                i.clear(); // opcional
             }
         }
     }
@@ -193,7 +193,7 @@ private:
             }
         }
 
-        _table[slot].push_back(make_pair(key, 0));
+        _table[slot].push_back(make_pair(key, 1));
         _number_of_elements++;
     }
 

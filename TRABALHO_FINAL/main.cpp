@@ -20,12 +20,14 @@ int main(int argc, char* argv[]) {
     std::string nameToWrite = argv[3];
 
     std::vector<std::string> all_words = FileUtils::readFile(pathToRead);
+    cout << "size: " << all_words.size() << endl;
 
     if (dataStruct == "dictionary_avl") {
         AVL_Tree avl_tree;
         for (auto& word : all_words) {
             avl_tree.insert(word);
         }
+        cout << "contagem: " << avl_tree.size() << endl;
         auto it = avl_tree.iterator();
         FileUtils::write_file(it, nameToWrite);
 
@@ -34,6 +36,8 @@ int main(int argc, char* argv[]) {
         for (auto& word : all_words) {
             rb_tree.insert(word);
         }
+
+        cout << "contagem: " << rb_tree.size() << endl;
         auto it = rb_tree.iterator();
         FileUtils::write_file(it, nameToWrite);
 
@@ -43,6 +47,7 @@ int main(int argc, char* argv[]) {
             cht.insert(word);
         }
 
+        cout << "contagem: " << cht.size() << endl;
         auto it = cht.iterator();
         FileUtils::write_file(it, nameToWrite);
 
@@ -52,6 +57,7 @@ int main(int argc, char* argv[]) {
             oht.insert(word);
         }
 
+        cout << "contagem: " << oht.size() << endl;
         auto it = oht.iterator();
         FileUtils::write_file(it, nameToWrite);
 
@@ -62,3 +68,4 @@ int main(int argc, char* argv[]) {
 
     return 0;
 }
+

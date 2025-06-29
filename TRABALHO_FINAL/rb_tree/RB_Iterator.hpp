@@ -5,15 +5,15 @@
 
 #include "RB_Node.hpp"
 #include "../Iterator.hpp"
-
 class RB_Iterator: public Iterator {
     stack<RB_Node*> _stack;
     RB_Node* _current;
+    RB_Node* NIL;
 
 public:
-    RB_Iterator(RB_Node* root) {
+    RB_Iterator(RB_Node* root, RB_Node* nil): NIL(nil) {
         _current = root;
-        while (_current) {
+        while (_current != NIL) {
             _stack.push(_current);
             _current = _current->left;
         }
@@ -27,9 +27,9 @@ public:
         RB_Node* node = _stack.top();
         _stack.pop();
 
-        pair val(node->key, node->count);
+        pair<string, size_t> val(node->key, node->count);
         node = node->right;
-        while (node) {
+        while (node != NIL) {
             _stack.push(node);
             node = node->left;
         }
