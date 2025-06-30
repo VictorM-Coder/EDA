@@ -102,6 +102,15 @@ public:
         _count_colisions = 0;
     }
 
+    size_t total_comparisons() {
+        return _count_comparisons;
+    }
+
+    size_t total_colisions() {
+        return _count_colisions;
+    }
+
+
 private:
     /**
      * @brief Busca o próximo número primo a partir do valor passado. Caso o valor passado seja par, soma-se mais um, para torná-lo impar antes de prosseguir.
