@@ -8,6 +8,8 @@
 class RB_Tree: public IDataStruct{
     RB_Node* _root;
     RB_Node* NIL;
+    size_t _count_rotations;
+    size_t _count_comparisons;
 
 public:
     RB_Tree() {
@@ -16,6 +18,8 @@ public:
         NIL->right = NIL;
         NIL->parent = NIL;
         _root = NIL;
+        _count_rotations = 0;
+        _count_comparisons = 0;
     }
 
     ~RB_Tree() override {
@@ -71,6 +75,16 @@ public:
     void clear() override {
         _clear(_root);
         _root = NIL;
+        _count_rotations = 0;
+        _count_comparisons = 0;
+    }
+
+    size_t total_rotations() {
+        return _count_rotations;
+    }
+
+    size_t total_comparisons() {
+        return _count_comparisons;
     }
 
 private:
@@ -98,9 +112,9 @@ private:
 
        while (x != NIL) {
            y = x;
-           if (key < x->key) {
+           if (_less(key, x->key)) {
                x = x->left;
-           } else if (key > x->key) {
+           } else if (_greater(key, x->key)) {
                x = x->right;
            } else {
                x->count++;
@@ -141,6 +155,7 @@ private:
        }
        u->right = node;
        node->parent = u;
+        _increment_count_rotations();
    }
 
     void _left_rotation(RB_Node* node) {
@@ -161,6 +176,7 @@ private:
        }
        u->left = node;
        node->parent = u;
+        _increment_count_rotations();
    }
 
     void _insert_fixup(RB_Node* node) {
@@ -336,6 +352,12 @@ private:
         delete node;
     }
 
+    /**
+     * @brief Método criado para fins de debug
+     * @param node
+     * @param prefix
+     * @param isLeft
+     */
     void _printTree(RB_Node* node, const string& prefix, bool isLeft) const {
         if (node == NIL) return;
 
@@ -347,6 +369,25 @@ private:
 
         _printTree(node->left, prefix + (isLeft ? "│   " : "    "), true);
         _printTree(node->right, prefix + (isLeft ? "│   " : "    "), false);
+    }
+
+    void _increment_count_rotations() {
+        _count_rotations++;
+    }
+
+    bool _greater(const string& a, const string& b) {
+        _count_comparisons++;
+        return a > b;
+    }
+
+    bool _less(const string& a, const string& b) {
+        _count_comparisons++;
+        return a < b;
+    }
+
+    bool _equal(const string& a, const string& b) {
+        _count_comparisons++;
+        return a == b;
     }
 
 };
