@@ -7,13 +7,15 @@
 
 
 class ChainedHashTable :  public IDataStruct {
-private:
     size_t _number_of_elements;
     size_t _table_size;
     float _max_load_factor;
 
     vector<list<pair<string,size_t>>> _table;
     hash<string> _hashing;
+
+    size_t _count_comparisons;
+    size_t _count_colisions;
 
 public:
     /**
@@ -22,6 +24,8 @@ public:
      * @param tableSize := o numero de slots da tabela.
      */
     ChainedHashTable(size_t tableSize = 19, float load_factor = 1.0) {
+        _count_comparisons = 0;
+        _count_colisions = 0;
         _number_of_elements = 0;
         _table_size = _get_next_prime(tableSize);
         _table.resize(_table_size);
@@ -38,6 +42,8 @@ public:
      */
     ChainedHashTable(const vector<pair<string, size_t>> &pairs, float load_factor = 1.0) {
         _number_of_elements = 0;
+        _count_comparisons = 0;
+        _count_colisions = 0;
         _table_size = _get_next_prime(pairs.size());
         _table.resize(_table_size);
 
@@ -92,6 +98,8 @@ public:
             _table[i].clear();
         }
         _number_of_elements = 0;
+        _count_comparisons = 0;
+        _count_colisions = 0;
     }
 
 private:
@@ -187,10 +195,14 @@ private:
 
         size_t slot = _calc_hash_code(key);
         for(auto& p : _table[slot]) {
-            if(p.first == key) {
+            if(_equal(p.first, key)) {
                 p.second++;
                 return;
             }
+        }
+
+        if (!_table[slot].empty()) {
+            _count_colisions++;
         }
 
         _table[slot].push_back(make_pair(key, 1));
@@ -209,9 +221,13 @@ private:
 
         size_t slot = _calc_hash_code(key);
         for(auto &p : _table[slot]) {
-            if(p.first == key) {
+            if(_equal(p.first, key)) {
                 return;
             }
+        }
+
+        if (!_table[slot].empty()) {
+            _count_colisions++;
         }
 
         _table[slot].push_back(make_pair(key, value));
@@ -232,5 +248,10 @@ private:
                 return;
             }
         }
+    }
+
+    bool _equal(const string& a, const string& b) {
+        _count_comparisons++;
+        return a == b;
     }
 };
