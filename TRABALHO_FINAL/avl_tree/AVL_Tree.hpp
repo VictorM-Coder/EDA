@@ -5,14 +5,20 @@
 
 class AVL_Tree : public IDataStruct {
     AVL_Node* _root;
+    size_t _count_rotations;
+    size_t _count_comparisons;
 
 public:
     AVL_Tree() {
+        _count_rotations = 0;
+        _count_comparisons = 0;
         _root = nullptr;
     }
 
     AVL_Tree(vector<pair<string, size_t>> pairs) {
         _root = nullptr;
+        _count_rotations = 0;
+        _count_comparisons = 0;
         for (int i = 0; i < pairs.size(); i++) {
             _root = _insert_pair(pairs[i], _root);
         }
@@ -64,6 +70,16 @@ public:
     void clear() {
         _clear(_root);
         _root = nullptr;
+        _count_rotations = 0;
+        _count_comparisons = 0;
+    }
+
+    size_t total_rotations() {
+        return _count_rotations;
+    }
+
+    size_t total_comparisons() {
+        return _count_comparisons;
     }
 
 private:
@@ -95,16 +111,14 @@ private:
             return new AVL_Node(key, 1);
         }
 
-        if (node->key == key) {
+        if (_equal(node->key, key)) {
             node->count++;
             return node;
         }
 
-        if (key > node->key) {
+        if (_greater(key, node->key)) {
             node->right = _insert(key, node->right);
-        }
-
-        if (key < node->key) {
+        } else {
             node->left = _insert(key, node->left);
         }
 
@@ -166,6 +180,7 @@ private:
         node->height = _calc_height(node);
         u->height = _calc_height(u);
 
+        _increment_count_rotations();
         return u;
     }
 
@@ -176,6 +191,8 @@ private:
 
         node->height = _calc_height(node);
         u->height = _calc_height(u);
+
+        _increment_count_rotations();
         return u;
     }
 
@@ -272,5 +289,24 @@ private:
         }
 
         return nullptr;
+    }
+
+    void _increment_count_rotations() {
+        _count_rotations++;
+    }
+
+    bool _greater(const string& a, const string& b) {
+        _count_comparisons++;
+        return a > b;
+    }
+
+    bool _less(const string& a, const string& b) {
+        _count_comparisons++;
+        return a < b;
+    }
+
+    bool _equal(const string& a, const string& b) {
+        _count_comparisons++;
+        return a == b;
     }
 };
