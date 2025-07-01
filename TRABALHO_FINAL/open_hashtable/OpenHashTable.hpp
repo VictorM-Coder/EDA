@@ -14,9 +14,15 @@ class OpenHashTable : public IDataStruct {
 
     hash<string> _hashing;
 
+    size_t _count_comparisons;
+    size_t _count_colisions;
+
 public:
     OpenHashTable(size_t tableSize = 19, float load_factor = 1.0) {
         _number_of_elements = 0;
+        _count_colisions = 0;
+        _count_comparisons = 0;
+
         _table_size = _get_next_prime(tableSize);
         _table.resize(_table_size);
 
@@ -29,6 +35,8 @@ public:
 
     OpenHashTable(const vector<pair<string, size_t>> &pairs, float load_factor = 1.0) {
         _number_of_elements = 0;
+        _count_colisions = 0;
+        _count_comparisons = 0;
         _table_size = _get_next_prime(pairs.size());
         _table.resize(_table_size);
 
@@ -87,10 +95,20 @@ public:
     void clear() override {
         _table.assign(_table_size, Slot{});
         _number_of_elements = 0;
+        _count_colisions = 0;
+        _count_comparisons = 0;
+    }
+
+    size_t total_comparisons() {
+        return _count_comparisons;
+    }
+
+    size_t total_colisions() {
+        return _count_colisions;
     }
 
 private:
-    size_t _get(const string &key) const {
+    size_t _get(const string &key) {
         int slot = _find_slot(key);
         if (slot == -1) {
             throw "key not found";
@@ -118,6 +136,10 @@ private:
                 _table[possible_slot] = Slot(key, ACTIVE, value);
                 _number_of_elements++;
                 return true;
+            } else {
+                if ((_table[possible_slot].key != key)) {
+                    _count_colisions++;
+                }
             }
         }
         return false;
@@ -133,12 +155,12 @@ private:
         return true;
     }
 
-    int _find_slot(const string& key) const {
+    int _find_slot(const string& key) {
         int index = 0;
         while (index < _table_size) {
             size_t slot = _calc_hash_code(key, index);
             if (_table[slot].status == EMPTY) return -1;
-            if (_table[slot].status == ACTIVE && _table[slot].key == key) return slot;
+            if (_table[slot].status == ACTIVE && _equal(_table[slot].key, key)) return slot;
             ++index;
         }
         return -1;
@@ -193,5 +215,10 @@ private:
                 _insert(old_vec[i].key, old_vec[i].value);
             }
         }
+    }
+
+    bool _equal(const string& a, const string& b) {
+        _count_comparisons++;
+        return a == b;
     }
 };
