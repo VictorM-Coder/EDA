@@ -3,8 +3,9 @@
 #include "AVL_Iterator.hpp"
 #include "../IDataStruct.hpp"
 
-class AVL_Tree : public IDataStruct {
-    AVL_Node* _root;
+template<typename K, typename V>
+class AVL_Tree : public IDataStruct<K, V> {
+    AVL_Node<K, V> * _root;
     size_t _count_rotations;
     size_t _count_comparisons;
 
@@ -15,7 +16,7 @@ public:
         _root = nullptr;
     }
 
-    AVL_Tree(vector<pair<string, size_t>> pairs) {
+    AVL_Tree(vector<pair<K, V>> pairs) {
         _root = nullptr;
         _count_rotations = 0;
         _count_comparisons = 0;
@@ -27,106 +28,78 @@ public:
     ~AVL_Tree() {
         AVL_Tree::clear();
     }
-    void insert(string key){
+    void insert(K key) override {
         _root = _insert(key, _root);
     }
 
-    void update(string key, size_t value) {
-        AVL_Node* node = _get(key, _root);
+    void update(K key, V value) override {
+        AVL_Node<K, V>* node = _get(key, _root);
         if (node != nullptr) {
             node->count = value;
         } else {
-            throw "key not found";
+            throw runtime_error("Key not found");
         }
     }
 
-    pair<string, size_t> get(string key) {
-        AVL_Node* node = _get(key, _root);
+    pair<K, V> get(K key) override {
+        AVL_Node<K, V>* node = _get(key, _root);
         if (node != nullptr) {
-            pair<string, size_t> iten;
-            iten.first = node->key;
-            iten.second = node->count;
-            return iten;
+            return { node->key, node->count };
         }
-        throw "key not found";
+        throw runtime_error("Key not found");
     }
 
-    void remove(string key) {
+    void remove(K key) override {
         _root = _remove(key, _root);
     }
 
-    bool exists(string key) {
+    bool exists(K key) override {
         return _get(key, _root) != nullptr;
     }
 
-    AVL_Iterator iterator() const {
+    AVL_Iterator<K, V> iterator() const {
         return {_root};
     }
 
-    size_t size() {
+    size_t size() override {
         return _size(_root);
     }
 
-    void clear() {
+    void clear() override {
         _clear(_root);
         _root = nullptr;
         _count_rotations = 0;
         _count_comparisons = 0;
     }
 
-    size_t total_rotations() {
+    size_t total_rotations() const {
         return _count_rotations;
     }
 
-    size_t total_comparisons() {
+    size_t total_comparisons() const {
         return _count_comparisons;
     }
 
 private:
-    AVL_Node* _insert_pair(pair<string, size_t> item_pair, AVL_Node* node) {
+    AVL_Node<K, V>* _insert_pair(pair<K, V> item_pair, AVL_Node<K, V>* node) {
         if (node == nullptr) {
             return new AVL_Node(item_pair, 1);
         }
 
-        if (node->key == item_pair.first) {
-            node->count += item_pair.second;
+        if (_equal(node->key, item_pair.first)) {
             return node;
         }
 
-        if (item_pair.first > node->key) {
+        if (_greater(item_pair.first, node->key)) {
             node->right = _insert_pair(item_pair, node->right);
-        }
-
-        if (item_pair.first < node->key) {
+        } else {
             node->left = _insert_pair(item_pair, node->left);
         }
 
-        node = _fixup_insert(node, item_pair.first);
-        return node;
+        return _fixup_insert(node, item_pair.first);
     }
 
-
-    AVL_Node* _insert(string key, AVL_Node* node) {
-        if (node == nullptr) {
-            return new AVL_Node(key, 1);
-        }
-
-        if (_equal(node->key, key)) {
-            node->count++;
-            return node;
-        }
-
-        if (_greater(key, node->key)) {
-            node->right = _insert(key, node->right);
-        } else {
-            node->left = _insert(key, node->left);
-        }
-
-        node = _fixup_insert(node, key);
-        return node;
-    }
-
-    AVL_Node* _remove(string key, AVL_Node* node) {
+    AVL_Node<K, V>* _remove(K key, AVL_Node<K, V>* node) {
         if (node == nullptr) {
             return nullptr;
         }
@@ -136,22 +109,22 @@ private:
         } else if (key > node->key) {
             node->right = _remove(key, node->right);
         } else if (node->right == nullptr) {
-            AVL_Node* child = node->left;
+            AVL_Node<K, V>* child = node->left;
             delete node;
             return child;
         } else {
             node->right = _remove_sucessor(node, node->right);
         }
 
-        node = _fixup_remove(node);
-        return node;
+        return _fixup_remove(node);
     }
-    AVL_Node* _remove_sucessor(AVL_Node* root, AVL_Node* node) {
+
+    AVL_Node<K, V>* _remove_sucessor(AVL_Node<K, V>* root, AVL_Node<K, V>* node) {
         if (node->left != nullptr) {
             node->left = _remove_sucessor(root, node->left);
         } else {
             root->key = node->key;
-            AVL_Node* aux = node->right;
+            AVL_Node<K, V>* aux = node->right;
             delete node;
             return aux;
         }
@@ -160,20 +133,20 @@ private:
         return node;
     }
 
-    int _height(AVL_Node* node) {
+    int _height(AVL_Node<K, V>* node) {
         return (node != nullptr) ? node->height : 0;
     }
 
-    int _calc_height(AVL_Node* node) {
+    int _calc_height(AVL_Node<K, V>* node) {
         return 1 + max(_height(node->left), _height(node->right));
     }
 
-    int _balance(AVL_Node* node) {
+    int _balance(AVL_Node<K, V>* node) {
         return _height(node->right) - _height(node->left);
     }
 
-    AVL_Node* _right_rotation(AVL_Node* node) {
-        AVL_Node* u = node->left;
+    AVL_Node<K, V>* _right_rotation(AVL_Node<K, V>* node) {
+        AVL_Node<K, V>* u = node->left;
         node->left = u->right;
         u->right = node;
 
@@ -184,8 +157,8 @@ private:
         return u;
     }
 
-    AVL_Node* _left_rotation(AVL_Node* node) {
-        AVL_Node* u = node->right;
+    AVL_Node<K, V>* _left_rotation(AVL_Node<K, V>* node) {
+        AVL_Node<K, V>* u = node->right;
         node->right =  u->left;
         u->left = node;
 
@@ -196,17 +169,17 @@ private:
         return u;
     }
 
-    AVL_Node* _double_right_rotation(AVL_Node* node) {
+    AVL_Node<K, V>* _double_right_rotation(AVL_Node<K, V>* node) {
         node->left = _left_rotation(node->left);
         return _right_rotation(node);
     }
 
-    AVL_Node* _double_left_rotation(AVL_Node* node) {
+    AVL_Node<K, V>* _double_left_rotation(AVL_Node<K, V>* node) {
         node->right = _right_rotation(node->right);
         return _left_rotation(node);
     }
 
-    AVL_Node* _fixup_insert(AVL_Node* node, string key) {
+    AVL_Node<K, V>* _fixup_insert(AVL_Node<K, V>* node, K key) {
         int balance = _balance(node);
 
         // CASE 1 (a)
@@ -233,7 +206,7 @@ private:
         return node;
     }
 
-    AVL_Node* _fixup_remove(AVL_Node* node) {
+    AVL_Node<K, V>* _fixup_remove(AVL_Node<K, V>* node) {
         int balance = _balance(node);
 
         if (balance > 1 && _balance(node->right) >= 0) {
@@ -256,7 +229,7 @@ private:
         return node;
     }
 
-    void _clear(AVL_Node* node) {
+    void _clear(AVL_Node<K, V>* node) {
         if (node != nullptr) {
             _clear(node->left);
             _clear(node->right);
@@ -264,14 +237,14 @@ private:
         }
     }
 
-    size_t _size(AVL_Node *node) const {
+    size_t _size(AVL_Node<K, V>* node) const {
         if (node != nullptr) {
             return 1 + _size(node->left) + _size(node->right);
         }
         return 0;
     }
 
-    AVL_Node* _get(string key, AVL_Node* node) {
+    AVL_Node<K, V>* _get(K key, AVL_Node<K, V>* node) {
         if (node == nullptr) {
             return nullptr;
         }
@@ -295,17 +268,17 @@ private:
         _count_rotations++;
     }
 
-    bool _greater(const string& a, const string& b) {
+    bool _greater(const K& a, const K& b) {
         _count_comparisons++;
         return a > b;
     }
 
-    bool _less(const string& a, const string& b) {
+    bool _less(const K& a, const K& b) {
         _count_comparisons++;
         return a < b;
     }
 
-    bool _equal(const string& a, const string& b) {
+    bool _equal(const K& a, const K& b) {
         _count_comparisons++;
         return a == b;
     }

@@ -1,17 +1,17 @@
 #pragma once
 #include <stack>
-#include <string>
 #include <utility>
 
 #include "AVLNode.hpp"
 #include "../Iterator.hpp"
 
-class AVL_Iterator: public Iterator{
+template<typename K, typename V>
+class AVL_Iterator: public Iterator<K, V>{
     stack<AVL_Node*> _stack;
-    AVL_Node* _current;
+    AVL_Node<K, V>* _current;
 
 public:
-    AVL_Iterator(AVL_Node* root) {
+    AVL_Iterator(AVL_Node<K, V>* root) {
         _current = root;
         while (_current) {
             _stack.push(_current);
@@ -23,11 +23,11 @@ public:
         return !_stack.empty();
     }
 
-    std::pair<std::string, size_t> next() override {
-        AVL_Node* node = _stack.top();
+    std::pair<K, V> next() override {
+        AVL_Node<K, V>* node = _stack.top();
         _stack.pop();
 
-        pair val(node->key, node->count);
+        pair val(node->key, node->value);
         node = node->right;
         while (node) {
             _stack.push(node);
