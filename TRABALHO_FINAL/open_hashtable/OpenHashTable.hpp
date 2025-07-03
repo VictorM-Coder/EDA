@@ -5,14 +5,15 @@
 #include "Slot.hpp"
 #include "../IDataStruct.hpp"
 
-class OpenHashTable : public IDataStruct {
+template<typename K, typename V>
+class OpenHashTable : public IDataStruct<K, V> {
     size_t _number_of_elements;
     size_t _table_size;
     float _max_load_factor;
 
-    vector<Slot> _table;
+    vector<Slot<K, V>> _table;
 
-    hash<string> _hashing;
+    hash<K> _hashing;
 
     size_t _count_comparisons;
     size_t _count_colisions;
@@ -33,7 +34,7 @@ public:
         }
     }
 
-    OpenHashTable(const vector<pair<string, size_t>> &pairs, float load_factor = 1.0) {
+    OpenHashTable(const vector<pair<K, V>> &pairs, float load_factor = 1.0) {
         _number_of_elements = 0;
         _count_colisions = 0;
         _count_comparisons = 0;
@@ -51,40 +52,37 @@ public:
         }
     }
 
-    void insert(string key) override {
-        _insert(key);
+    void insert(pair<K, V> my_pair) override {
+        _insert(my_pair);
     }
 
-    void update(string key, size_t value) override {
+    void update(K key, V value) override {
         int slot = _find_slot(key);
         if (slot == -1) {
-            throw "key not found";
+            throw std::runtime_error("Key not found");
         }
         _table[slot].value = value;
     }
 
-    pair<string, size_t> get(string key) override {
+    pair<K, V> get(K key) override {
         int slot = _find_slot(key);
         if (slot == -1) {
-            throw "key not found";
+            throw std::runtime_error("Key not found");
         }
 
-        pair<string, size_t> my_pair;
-        my_pair.first = _table[slot].key;
-        my_pair.second = _table[slot].value;
-        return my_pair;
+        return {_table[slot].key, _table[slot].value};
     }
 
-    void remove(string key) override {
+    void remove(K key) override {
         _remove(key);
     }
 
-    bool exists(string key) override {
+    bool exists(K key) override {
         int slot = _find_slot(key);
         return slot > -1;
     }
 
-     OpenHashIterator iterator() {
+     OpenHashIterator<K, V> iterator() {
          return OpenHashIterator(_table);
      }
 
@@ -93,22 +91,22 @@ public:
     }
 
     void clear() override {
-        _table.assign(_table_size, Slot{});
+        _table.assign(_table_size, Slot<K, V>{});
         _number_of_elements = 0;
         _count_colisions = 0;
         _count_comparisons = 0;
     }
 
-    size_t total_comparisons() {
+    size_t total_comparisons() const {
         return _count_comparisons;
     }
 
-    size_t total_colisions() {
+    size_t total_colisions() const {
         return _count_colisions;
     }
 
 private:
-    size_t _get(const string &key) {
+    size_t _get(const K &key) {
         int slot = _find_slot(key);
         if (slot == -1) {
             throw "key not found";
@@ -116,16 +114,14 @@ private:
         return _table[slot].value;
     }
 
-    bool _insert(const string &key, size_t value = 1) {
+    bool _insert(const K &key, V value) {
         if (_calc_load_factor() >= _max_load_factor) {
             _rehash(2 * _table_size);
         }
 
         int slot = _find_slot(key);
 
-        //Aumenta a contagem se já existir uma chave
         if (slot != -1) {
-            _table[slot].value += value;
             return true;
         }
 
@@ -133,7 +129,7 @@ private:
             size_t possible_slot = _calc_hash_code(key, i);
             //Adiciona uma nova chave na tabela
             if (_table[possible_slot].status != ACTIVE) {
-                _table[possible_slot] = Slot(key, ACTIVE, value);
+                _table[possible_slot] = Slot<K, V>(key, ACTIVE, value);
                 _number_of_elements++;
                 return true;
             } else {
@@ -145,7 +141,7 @@ private:
         return false;
     }
 
-    bool _remove(const string &key) {
+    bool _remove(const K &key) {
         int slot = _find_slot(key);
         if (slot == -1) {
             return false;
@@ -155,7 +151,7 @@ private:
         return true;
     }
 
-    int _find_slot(const string& key) {
+    int _find_slot(const K& key) {
         int index = 0;
         while (index < _table_size) {
             size_t slot = _calc_hash_code(key, index);
@@ -166,7 +162,7 @@ private:
         return -1;
     }
 
-    size_t _calc_hash_code(const string& key, size_t index) const {
+    size_t _calc_hash_code(const K& key, size_t index) const {
         return (_hashing(key) + index) % _table_size;
     }
 
@@ -204,7 +200,7 @@ private:
     void _rehash(const size_t new_size) {
         size_t new_table_size = _get_next_prime(new_size);
         if(new_table_size > _table_size) {
-            vector<Slot> old_vec = _table; // copia as chaves para uma nova tabela
+            vector<Slot<K, V>> old_vec = _table; // copia as chaves para uma nova tabela
             _table.clear(); // apaga todas as chaves da tabela atual e deixa ela vazia
             _table.resize(new_table_size); // tabela redimensionada com novo primo
 
@@ -217,7 +213,7 @@ private:
         }
     }
 
-    bool _equal(const string& a, const string& b) {
+    bool _equal(const K& a, const K& b) {
         _count_comparisons++;
         return a == b;
     }

@@ -7,22 +7,17 @@ enum Status {
     DELETED
 };
 
+template<typename K, typename V>
 struct Slot {
-    std::string key;
-    size_t value;
+    K key;
+    V value;
     Status status;
 
-    Slot() : key(""), value(0), status(EMPTY) {}
+    Slot() : status(EMPTY) {}
 
-    Slot(std::string key, Status status) {
-        this->key = key;
+    Slot(pair<K, V> my_pair, Status status) {
+        this->key = my_pair.first;
+        this->value = my_pair.second;
         this->status = status;
-        this->value = 1;
-    }
-
-    Slot(std::string key, Status status, size_t value) {
-        this->key = key;
-        this->status = status;
-        this->value = value;
     }
 };

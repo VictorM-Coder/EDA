@@ -6,12 +6,13 @@
 #include "Slot.hpp"
 #include "../Iterator.hpp"
 
-class OpenHashIterator: public Iterator {
-    std::vector<Slot> _table;
+template<typename K, typename V>
+class OpenHashIterator: public Iterator<K, V> {
+    std::vector<Slot<K, V>> _table;
     size_t index;
 
 public:
-    OpenHashIterator(std::vector<Slot> table) {
+    OpenHashIterator(std::vector<Slot<K, V>> table) {
         this->_table = table;
         this->index = _find_next_active(0);
     }
@@ -20,7 +21,7 @@ public:
         return index < _table.size();
     }
 
-    std::pair<std::string, size_t> next() override {
+    std::pair<K, V> next() override {
         auto actual = _table[index];
         index = _find_next_active(index + 1);
         return { actual.key, actual.value };
