@@ -5,14 +5,14 @@
 #include "Chained_Iterator.hpp"
 #include "../IDataStruct.hpp"
 
-
-class ChainedHashTable :  public IDataStruct {
+template<typename K, typename V>
+class ChainedHashTable :  public IDataStruct<K, V> {
     size_t _number_of_elements;
     size_t _table_size;
     float _max_load_factor;
 
-    vector<list<pair<string,size_t>>> _table;
-    hash<string> _hashing;
+    vector<list<pair<K, V>>> _table;
+    hash<K> _hashing;
 
     size_t _count_comparisons;
     size_t _count_colisions;
@@ -40,7 +40,7 @@ public:
     /**
      * @brief Construtor: cria uma tabela hash com um numero primo de slots a partir de um vector de pares.
      */
-    ChainedHashTable(const vector<pair<string, size_t>> &pairs, float load_factor = 1.0) {
+    ChainedHashTable(const vector<pair<K, V>> &pairs, float load_factor = 1.0) {
         _number_of_elements = 0;
         _count_comparisons = 0;
         _count_colisions = 0;
@@ -58,25 +58,25 @@ public:
         }
     }
 
-    void insert(string key) override {
-        _insert(key);
+    void insert(pair<K, V> my_pair) override {
+        _insert(my_pair);
     }
 
-    void update(string key, size_t value) override {
-        pair<string, size_t>& my_pair = _get(key);
+    void update(K key, V value) override {
+        pair<K, V>& my_pair = _get(key);
         my_pair.second = value;
     }
 
-    pair<string, size_t> get(string key) override {
-        pair<string, size_t> my_pair = _get(key);
+    pair<K, V> get(K key) override {
+        pair<K, V> my_pair = _get(key);
         return my_pair;
     }
 
-    void remove(string key) override {
+    void remove(K key) override {
         _remove(key);
     }
 
-    bool exists(string key) override {
+    bool exists(K key) override {
         try {
             _get(key);
             return true;
@@ -139,11 +139,11 @@ private:
         }
     }
 
-    size_t _calc_hash_code(const string& key) const {
+    size_t _calc_hash_code(const K& key) const {
         return _hashing(key) % _table_size;
     }
 
-    pair<string, size_t>& _get(const string& key) {
+    pair<K, V>& _get(const K& key) {
         size_t slot = _calc_hash_code(key);
 
         for (auto& actual_pair : _table[slot]) {
@@ -177,7 +177,7 @@ private:
     void _rehash(size_t new_size) {
         size_t new_table_size = _get_next_prime(new_size);
         if(new_table_size > _table_size) {
-            vector<list<pair<string,size_t>>> old_vec = _table; // copia as chaves para uma nova tabela
+            vector<list<pair<K, V>>> old_vec = _table; // copia as chaves para uma nova tabela
             _table.clear(); // apaga todas as chaves da tabela atual e deixa ela vazia
             _table.resize(new_table_size); // tabela redimensionada com novo primo
 
@@ -194,43 +194,16 @@ private:
     }
 
     /**
-     * @brief Insert para inserir e contar os elementos
-     * @param key chave a ser inserida
-     */
-    void _insert(const string& key) {
-        if (_calc_load_factor() >= _max_load_factor) {
-            _rehash(2*_table_size);
-        }
-
-        size_t slot = _calc_hash_code(key);
-        for(auto& p : _table[slot]) {
-            if(_equal(p.first, key)) {
-                p.second++;
-                return;
-            }
-        }
-
-        if (!_table[slot].empty()) {
-            _count_colisions++;
-        }
-
-        _table[slot].push_back(make_pair(key, 1));
-        _number_of_elements++;
-    }
-
-    /**
      * @brief Insere um novo elemento com chave e valor na tabela. caso o elemento já exista, apenas ignora
-     * @param key
-     * @param value
      */
-    void _insert(const string& key, const size_t& value) {
+    void _insert(pair<K, V> my_pair) {
         if (_calc_load_factor() >= _max_load_factor) {
             _rehash(2*_table_size);
         }
 
-        size_t slot = _calc_hash_code(key);
+        size_t slot = _calc_hash_code(my_pair.first);
         for(auto &p : _table[slot]) {
-            if(_equal(p.first, key)) {
+            if(_equal(p.first, my_pair.first)) {
                 return;
             }
         }
@@ -239,7 +212,7 @@ private:
             _count_colisions++;
         }
 
-        _table[slot].push_back(make_pair(key, value));
+        _table[slot].push_back(my_pair);
         _number_of_elements++;
     }
 
@@ -248,7 +221,7 @@ private:
      *
      * @param key := chave a ser removida
      */
-    void _remove(const string& key) {
+    void _remove(const K& key) {
         size_t slot = _calc_hash_code(key);
         for(auto it = _table[slot].begin(); it != _table[slot].end(); ++it) {
             if(it->first == key) {
@@ -259,7 +232,7 @@ private:
         }
     }
 
-    bool _equal(const string& a, const string& b) {
+    bool _equal(const K& a, const K& b) {
         _count_comparisons++;
         return a == b;
     }

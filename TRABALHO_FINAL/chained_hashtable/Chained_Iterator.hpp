@@ -6,13 +6,14 @@
 
 #include "../Iterator.hpp"
 
-class ChainedIterator : public Iterator {
-    std::vector<std::list<std::pair<std::string,size_t>>> _table;
+template<typename K, typename V>
+class ChainedIterator : public Iterator<K, V> {
+    std::vector<std::list<std::pair<K, V>>> _table;
     int index;
-    std::list<std::pair<std::string, size_t>>::iterator _list_iterator;
+    std::list<std::pair<K, V>>::iterator _list_iterator;
 
 public:
-    ChainedIterator(std::vector<std::list<std::pair<std::string,size_t>>>& table) {
+    ChainedIterator(std::vector<std::list<std::pair<K, V>>>& table) {
         _table = table;
         index = 0;
         while (index < _table.size() && _table[index].empty()) {
@@ -28,7 +29,7 @@ public:
         return index < _table.size();
     }
 
-    std::pair<std::string, size_t> next() override {
+    std::pair<K, V> next() override {
         auto value = *_list_iterator;
         ++_list_iterator;
 
