@@ -5,13 +5,14 @@
 
 #include "RB_Node.hpp"
 #include "../Iterator.hpp"
-class RB_Iterator: public Iterator {
+template<typename K, typename V>
+class RB_Iterator: public Iterator<K, V> {
     stack<RB_Node*> _stack;
-    RB_Node* _current;
-    RB_Node* NIL;
+    RB_Node<K, V>* _current;
+    RB_Node<K, V>* NIL;
 
 public:
-    RB_Iterator(RB_Node* root, RB_Node* nil): NIL(nil) {
+    RB_Iterator(RB_Node<K, V>* root, RB_Node<K, V>* nil): NIL(nil) {
         _current = root;
         while (_current != NIL) {
             _stack.push(_current);
@@ -23,11 +24,11 @@ public:
         return !_stack.empty();
     }
 
-    pair<string, size_t> next() override {
-        RB_Node* node = _stack.top();
+    pair<K, V> next() override {
+        RB_Node<K, V>* node = _stack.top();
         _stack.pop();
 
-        pair<string, size_t> val(node->key, node->count);
+        pair<K, V> val(node->key, node->value);
         node = node->right;
         while (node != NIL) {
             _stack.push(node);

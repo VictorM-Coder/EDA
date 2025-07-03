@@ -5,15 +5,16 @@
 #include "../IDataStruct.hpp"
 #include "RB_Node.hpp"
 
-class RB_Tree: public IDataStruct{
-    RB_Node* _root;
-    RB_Node* NIL;
+template<typename K, typename V>
+class RB_Tree: public IDataStruct<K, V>{
+    RB_Node<K, V>* _root;
+    RB_Node<K, V>* NIL;
     size_t _count_rotations;
     size_t _count_comparisons;
 
 public:
     RB_Tree() {
-        NIL = new RB_Node("", BLACK);
+        NIL = new RB_Node<K, V>(BLACK);
         NIL->left = NIL;
         NIL->right = NIL;
         NIL->parent = NIL;
@@ -31,40 +32,36 @@ public:
         _printTree(_root, "", true);
     }
 
-
-    void insert(string key) override {
-        _insert(key);
+    void insert(pair<K, V> my_pair) override {
+        _insert(my_pair);
     }
 
-    void update(string key, size_t value) override {
-        RB_Node* node = _get(key);
+    void update(K key, V value) override {
+        RB_Node<K, V>* node = _get(key);
         if (node != nullptr) {
             node->count = value;
         } else {
-            throw "key not found";
+            throw runtime_error("Key not found");
         }
     }
 
-    pair<string, size_t> get(string key) override {
-        RB_Node* node = _get(key);
+    pair<K, V> get(K key) override {
+        RB_Node<K, V>* node = _get(key);
         if (node != NIL) {
-            pair<string, size_t> iten;
-            iten.first = node->key;
-            iten.second = node->count;
-            return iten;
+            return { node->key, node->count };
         }
-        throw "key not found";
+        throw runtime_error("Key not found");
     }
 
-    void remove(string key) override {
+    void remove(K key) override {
         _remove(key);
     }
 
-    bool exists(string key) override {
+    bool exists(K key) override {
         return _get(key) != NIL;
     }
 
-    RB_Iterator iterator() {
+    RB_Iterator<K, V> iterator() {
         return RB_Iterator(_root, NIL);
     }
 
@@ -79,11 +76,11 @@ public:
         _count_comparisons = 0;
     }
 
-    size_t total_rotations() {
+    size_t total_rotations() const {
         return _count_rotations;
     }
 
-    size_t total_comparisons() {
+    size_t total_comparisons() const {
         return _count_comparisons;
     }
 
@@ -93,8 +90,8 @@ private:
      * @param key
      * @return the Node with contains the key or NIL case key not exists
      */
-    RB_Node* _get(const string& key) const {
-        RB_Node* node = _root;
+    RB_Node<K, V>* _get(const K& key) const {
+        RB_Node<K, V>* node = _root;
         //FIND NODE
         while (node != NIL && node->key != key) {
             if (key < node->key) {
@@ -106,23 +103,22 @@ private:
         return node;
     }
 
-   void _insert(const string& key) {
-       RB_Node* x = _root;
-       RB_Node* y = NIL;
+   void _insert(pair<K, V> my_pair) {
+       RB_Node<K, V>* x = _root;
+       RB_Node<K, V>* y = NIL;
 
        while (x != NIL) {
            y = x;
-           if (_less(key, x->key)) {
+           if (_less(my_pair->key, x->key)) {
                x = x->left;
-           } else if (_greater(key, x->key)) {
+           } else if (_greater(my_pair->key, x->key)) {
                x = x->right;
            } else {
-               x->count++;
                return;
            }
        }
 
-       auto* z = new RB_Node(key, RED);
+       auto* z = new RB_Node<K, V>(my_pair, RED);
        z->parent = y;
        if (y == NIL) {
            _root = z;
@@ -137,8 +133,8 @@ private:
        _insert_fixup(z);
    }
 
-    void _right_rotation(RB_Node* node) {
-       RB_Node* u = node->left;
+    void _right_rotation(RB_Node<K, V>* node) {
+       RB_Node<K, V>* u = node->left;
        node->left =  u->right;
 
        if (u->right != NIL) {
@@ -158,8 +154,8 @@ private:
         _increment_count_rotations();
    }
 
-    void _left_rotation(RB_Node* node) {
-       RB_Node* u = node->right;
+    void _left_rotation(RB_Node<K, V>* node) {
+       RB_Node<K, V>* u = node->right;
        node->right =  u->left;
 
        if (u->left != NIL) {
@@ -179,10 +175,10 @@ private:
         _increment_count_rotations();
    }
 
-    void _insert_fixup(RB_Node* node) {
+    void _insert_fixup(RB_Node<K, V>* node) {
        while (node->parent->color == RED) {
            if (node->parent == node->parent->parent->left) {
-               RB_Node* aux = node->parent->parent->right;
+               RB_Node<K, V>* aux = node->parent->parent->right;
                // CASE 1
                if (aux->color == RED) {
                    node->parent->color = BLACK;
@@ -201,7 +197,7 @@ private:
                    _right_rotation(node->parent->parent);
                }
            } else if (node->parent == node->parent->parent->right) {
-               RB_Node* aux = node->parent->parent->left;
+               RB_Node<K, V>* aux = node->parent->parent->left;
                // CASE 1
                if (aux->color == RED) {
                    node->parent->color = BLACK;
@@ -223,17 +219,17 @@ private:
        _root->color = BLACK;
    }
 
-    void _remove(const string& key) {
-       RB_Node* node = _get(key);
+    void _remove(const K& key) {
+       RB_Node<K, V>* node = _get(key);
 
        if (node != NIL) {
            _delete(node);
        }
    }
 
-    void _delete(RB_Node* node) {
-       RB_Node* y;
-       RB_Node* x;
+    void _delete(RB_Node<K, V>* node) {
+       RB_Node<K, V>* y;
+       RB_Node<K, V>* x;
 
        if (node->left == NIL || node->right == NIL) {
            y = node;
@@ -269,9 +265,9 @@ private:
        delete y;
    }
 
-    void _delete_fixup(RB_Node* node) {
+    void _delete_fixup(RB_Node<K, V>* node) {
        while (node != _root && node->color == BLACK) {
-           RB_Node* w;
+           RB_Node<K, V>* w;
            if (node == node->parent->left) { // Node is a left child
                w = node->parent->right;
                if (w->color == RED) { // CASE 1
@@ -329,21 +325,21 @@ private:
        node->color = BLACK;
    }
 
-    RB_Node* _find_min(RB_Node* node) const {
+    RB_Node<K, V>* _find_min(RB_Node<K, V>* node) const {
        while (node->left != NIL) {
            node = node->left;
        }
        return node;
    }
 
-    size_t _size(const RB_Node* node) const {
+    size_t _size(const RB_Node<K, V>* node) const {
         if (node != NIL) {
             return 1 + _size(node->left) + _size(node->right);
         }
         return 0;
     }
 
-    void _clear(RB_Node* node) {
+    void _clear(RB_Node<K, V>* node) {
         if (node == NIL) {
             return;
         }
@@ -358,7 +354,7 @@ private:
      * @param prefix
      * @param isLeft
      */
-    void _printTree(RB_Node* node, const string& prefix, bool isLeft) const {
+    void _printTree(RB_Node<K, V>* node, const string& prefix, bool isLeft) const {
         if (node == NIL) return;
 
         cout << prefix;
@@ -375,19 +371,18 @@ private:
         _count_rotations++;
     }
 
-    bool _greater(const string& a, const string& b) {
+    bool _greater(const K& a, const K& b) {
         _count_comparisons++;
         return a > b;
     }
 
-    bool _less(const string& a, const string& b) {
+    bool _less(const K& a, const K& b) {
         _count_comparisons++;
         return a < b;
     }
 
-    bool _equal(const string& a, const string& b) {
+    bool _equal(const K& a, const K& b) {
         _count_comparisons++;
         return a == b;
     }
-
 };

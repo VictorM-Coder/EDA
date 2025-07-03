@@ -25,11 +25,11 @@ public:
         }
     }
 
-    ~AVL_Tree() {
+    ~AVL_Tree() override {
         AVL_Tree::clear();
     }
-    void insert(K key) override {
-        _root = _insert(key, _root);
+    void insert(pair<K, V> my_pair) override {
+        _root = _insert_pair(my_pair, _root);
     }
 
     void update(K key, V value) override {
