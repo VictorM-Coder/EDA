@@ -3,11 +3,8 @@
 // #include <vector>
 //
 // #include "FileUtils.hpp"
-// #include "avl_tree/AVL_Tree.hpp"
-// #include "rb_tree/RB_Tree.hpp"
-// #include "chained_hashtable/ChainedHashTable.hpp"
-// #include "open_hashtable/OpenHashTable.hpp"
-// //
+// #include "Dictionary.hpp"
+//
 // int main(int argc, char* argv[]) {
 //
 //     if (argc != 4) {
@@ -20,54 +17,34 @@
 //     std::string nameToWrite = argv[3];
 //
 //     std::vector<std::string> all_words = FileUtils::readFile(pathToRead);
-//     cout << "size: " << all_words.size() << endl;
+//     std::cout << "size: " << all_words.size() << std::endl;
 //
+//     Type chosenType;
 //     if (dataStruct == "dictionary_avl") {
-//         AVL_Tree avl_tree;
-//         for (auto& word : all_words) {
-//             avl_tree.insert(word);
-//         }
-//         cout << "contagem: " << avl_tree.size() << endl;
-//         auto it = avl_tree.iterator();
-//         FileUtils::write_file(it, nameToWrite);
-//
+//         chosenType = AVL_TREE;
 //     } else if (dataStruct == "dictionary_rb") {
-//         RB_Tree rb_tree;
-//         for (auto& word : all_words) {
-//             rb_tree.insert(word);
-//         }
-//
-//         cout << "contagem: " << rb_tree.size() << endl;
-//         auto it = rb_tree.iterator();
-//         FileUtils::write_file(it, nameToWrite);
-//
+//         chosenType = RB_TREE;
 //     } else if (dataStruct == "dictionary_cht") {
-//         ChainedHashTable cht;
-//         for (auto& word : all_words) {
-//             cht.insert(word);
-//         }
-//
-//         cout << "contagem: " << cht.size() << endl;
-//         auto it = cht.iterator();
-//         FileUtils::write_file(it, nameToWrite);
-//
+//         chosenType = CHAINED_HT;
 //     } else if (dataStruct == "dictionary_oht") {
-//         OpenHashTable oht;
-//         for (auto& word : all_words) {
-//             oht.insert(word);
-//         }
-//
-//         cout << "contagem: " << oht.size() << endl;
-//         auto it = oht.iterator();
-//         FileUtils::write_file(it, nameToWrite);
-//
+//         chosenType = OPEN_HT;
 //     } else {
 //         std::cerr << "Erro: estrutura de dados \"" << dataStruct << "\" não reconhecida." << std::endl;
 //         return 1;
 //     }
 //
+//     Dictionary dict(chosenType);
+//
+//     for (const auto& word : all_words) {
+//         dict.insert(word);
+//     }
+//
+//     auto it = dict.getIterator();
+//     FileUtils::write_file(*it, nameToWrite);
+//
 //     return 0;
 // }
+
 
 #include <iostream>
 #include <string>
@@ -148,7 +125,7 @@ void medirTempoInsercao(const std::string& book, const std::vector<std::string>&
 
 
 int main() {
-    const int total_tests = 10;
+    const int total_tests = 1000;
 
     medirTempoInsercao("The Secret Garden", FileUtils::readFile("/home/victor/Documentos/faculdade/EDA/TRABALHO_FINAL/entrada-livros/the-secret-garden.txt"), total_tests);
     medirTempoInsercao("Sherlock Holmes", FileUtils::readFile("/home/victor/Documentos/faculdade/EDA/TRABALHO_FINAL/entrada-livros/sherlock_holmes.txt"), total_tests);

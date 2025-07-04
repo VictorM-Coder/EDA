@@ -30,7 +30,7 @@ public:
         return words;
     }
 
-    static void write_file(Iterator<string, size_t> & it, const std::string& name) {
+    static void write_file(Iterator<std::string, size_t> & it, const std::string& name) {
         std::ofstream my_file(name + ".txt");
 
         if (!my_file) {
@@ -53,28 +53,53 @@ private:
 
         icu::UnicodeString result;
 
+        bool hasAlnum = false;
+
         for (int32_t i = 0; i < ustr.length(); ++i) {
             UChar32 c = ustr.char32At(i);
 
-            // pular se for pontuação
-            if (u_ispunct(c) && c != 0x2D) { // 0x2D é o '-'
+            // Ignorar pontuação, exceto hífen
+            if (u_ispunct(c) && c != 0x2D) {
                 continue;
+            }
+
+            // Verifica se é alfanumérico
+            if (u_isalnum(c)) {
+                hasAlnum = true;
             }
 
             UChar32 lower = u_tolower(c);
             result.append(lower);
 
-            // Se for um caractere composto (como emoji, ou letra fora BMP), pular índice extra
+            // Se for caractere fora do BMP, pular índice extra
             if (c > 0xFFFF) {
                 ++i;
             }
         }
 
-        // converter resultado UTF-16 de volta para UTF-8 std::string
+        // Verifica se sobrou algo além de hífens
+        if (!hasAlnum) {
+            return ""; // descarta palavras como "--", "---", etc.
+        }
+
+        // Remove hífens iniciais e finais, se ainda existirem
+        while (result.length() > 0 && result.char32At(0) == 0x2D) {
+            result.remove(0, 1);
+        }
+        while (result.length() > 0 && result.char32At(result.length() - 1) == 0x2D) {
+            int32_t lastIndex = result.length() - 1;
+            if (result.char32At(lastIndex) > 0xFFFF) {
+                result.removeBetween(lastIndex - 1, lastIndex + 1); // caractere fora BMP
+            } else {
+                result.remove(lastIndex, 1);
+            }
+        }
+
         std::string cleaned;
         result.toUTF8String(cleaned);
         return cleaned;
     }
+
 
 
 };
