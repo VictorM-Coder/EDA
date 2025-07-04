@@ -39,7 +39,7 @@ public:
     void update(K key, V value) override {
         RB_Node<K, V>* node = _get(key);
         if (node != nullptr) {
-            node->count = value;
+            node->value = value;
         } else {
             throw runtime_error("Key not found");
         }
@@ -48,7 +48,7 @@ public:
     pair<K, V> get(K key) override {
         RB_Node<K, V>* node = _get(key);
         if (node != NIL) {
-            return { node->key, node->count };
+            return { node->key, node->value };
         }
         throw runtime_error("Key not found");
     }
@@ -109,9 +109,9 @@ private:
 
        while (x != NIL) {
            y = x;
-           if (_less(my_pair->key, x->key)) {
+           if (_less(my_pair.first, x->key)) {
                x = x->left;
-           } else if (_greater(my_pair->key, x->key)) {
+           } else if (_greater(my_pair.first, x->key)) {
                x = x->right;
            } else {
                return;
@@ -256,7 +256,7 @@ private:
 
        if (y != node) {
            node->key = y->key;
-           node->count = y->count;
+           node->value = y->value;
        }
 
        if (y->color == BLACK) {

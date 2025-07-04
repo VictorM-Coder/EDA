@@ -75,6 +75,7 @@
 #include <chrono>
 #include <numeric> // Para std::accumulate
 
+#include "Dictionary.hpp"
 #include "FileUtils.hpp"
 #include "avl_tree/AVL_Tree.hpp"
 #include "rb_tree/RB_Tree.hpp"
@@ -84,6 +85,7 @@
 using namespace std;
 using namespace std::chrono;
 
+
 void medirTempoInsercao(const std::string& book, const std::vector<std::string>& words, int total_tests) {
     cout << "\n===== Livro: " << book << " | Total de palavras: " << words.size() << " | Total de testes por estrutura: " << total_tests << " =====" << endl;
 
@@ -91,40 +93,40 @@ void medirTempoInsercao(const std::string& book, const std::vector<std::string>&
 
     for (int i = 0; i < total_tests; ++i) {
         {
-            AVL_Tree avl;
+            Dictionary dict(AVL_TREE);
             auto start = high_resolution_clock::now();
             for (const auto& word : words) {
-                avl.insert(word);
+                dict.insert(word);
             }
             auto end = high_resolution_clock::now();
             temposAVL.push_back(duration_cast<milliseconds>(end - start).count());
         }
 
         {
-            RB_Tree rb;
+            Dictionary dict(RB_TREE);
             auto start = high_resolution_clock::now();
             for (const auto& word : words) {
-                rb.insert(word);
+                dict.insert(word);
             }
             auto end = high_resolution_clock::now();
             temposRB.push_back(duration_cast<milliseconds>(end - start).count());
         }
 
         {
-            ChainedHashTable cht;
+            Dictionary dict(CHAINED_HT);
             auto start = high_resolution_clock::now();
             for (const auto& word : words) {
-                cht.insert(word);
+                dict.insert(word);
             }
             auto end = high_resolution_clock::now();
             temposCHT.push_back(duration_cast<milliseconds>(end - start).count());
         }
 
         {
-            OpenHashTable oht;
+            Dictionary dict(OPEN_HT);
             auto start = high_resolution_clock::now();
             for (const auto& word : words) {
-                oht.insert(word);
+                dict.insert(word);
             }
             auto end = high_resolution_clock::now();
             temposOHT.push_back(duration_cast<milliseconds>(end - start).count());
@@ -143,6 +145,7 @@ void medirTempoInsercao(const std::string& book, const std::vector<std::string>&
 
     cout << "----------------------------------------" << endl;
 }
+
 
 int main() {
     const int total_tests = 10;

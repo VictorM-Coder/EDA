@@ -16,7 +16,7 @@ struct RB_Node {
     RB_Node* left;
     RB_Node* right;
 
-    RB_Node(bool color) {
+    explicit RB_Node(bool color) {
         this->color = color;
 
         this->parent = nullptr;
@@ -24,7 +24,7 @@ struct RB_Node {
         this->right = nullptr;
     }
 
-    RB_Node(const pair<string, size_t> &item_pair, bool color, const int height) {
+    RB_Node(const pair<string, size_t> &item_pair, bool color) {
         this->key = item_pair.first;
         this->value = item_pair.second;
         this->color = color;

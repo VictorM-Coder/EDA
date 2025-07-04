@@ -1,6 +1,7 @@
 #pragma once
 #include <list>
 #include <stdexcept>
+#include <cmath>
 
 #include "Chained_Iterator.hpp"
 #include "../IDataStruct.hpp"
@@ -85,7 +86,7 @@ public:
         }
     }
 
-    ChainedIterator iterator() {
+    ChainedIterator<K, V> iterator() {
         return ChainedIterator(_table);
     }
 
@@ -117,7 +118,7 @@ private:
      * @param actual Número atual
      * @return Pŕoximo número primo
      */
-    static size_t _get_next_prime(size_t actual) {
+    size_t _get_next_prime(size_t actual) {
         if (actual <= 2) return 3;
 
         actual += (actual % 2 == 0);
@@ -186,7 +187,7 @@ private:
             _table_size = new_table_size;
             for(auto & i : old_vec) {
                 for(auto& par : i) {
-                    _insert(par.first, par.second);
+                    _insert({par.first, par.second});
                 }
                 i.clear(); // opcional
             }

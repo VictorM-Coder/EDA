@@ -30,7 +30,7 @@ public:
         return words;
     }
 
-    static void write_file(Iterator& it, const std::string& name) {
+    static void write_file(Iterator<string, size_t> & it, const std::string& name) {
         std::ofstream my_file(name + ".txt");
 
         if (!my_file) {

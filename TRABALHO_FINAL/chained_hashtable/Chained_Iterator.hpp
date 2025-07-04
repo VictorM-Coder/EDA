@@ -10,7 +10,8 @@ template<typename K, typename V>
 class ChainedIterator : public Iterator<K, V> {
     std::vector<std::list<std::pair<K, V>>> _table;
     int index;
-    std::list<std::pair<K, V>>::iterator _list_iterator;
+    typename std::list<std::pair<K, V>>::iterator _list_iterator;
+
 
 public:
     ChainedIterator(std::vector<std::list<std::pair<K, V>>>& table) {

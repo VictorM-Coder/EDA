@@ -7,7 +7,7 @@
 
 template<typename K, typename V>
 class AVL_Iterator: public Iterator<K, V>{
-    stack<AVL_Node*> _stack;
+    stack<AVL_Node<K, V>*> _stack;
     AVL_Node<K, V>* _current;
 
 public:

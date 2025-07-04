@@ -53,7 +53,7 @@ public:
     }
 
     void insert(pair<K, V> my_pair) override {
-        _insert(my_pair);
+        _insert(my_pair.first, my_pair.second);
     }
 
     void update(K key, V value) override {
@@ -129,7 +129,7 @@ private:
             size_t possible_slot = _calc_hash_code(key, i);
             //Adiciona uma nova chave na tabela
             if (_table[possible_slot].status != ACTIVE) {
-                _table[possible_slot] = Slot<K, V>(key, ACTIVE, value);
+                _table[possible_slot] = Slot<K, V>({key, value}, ACTIVE);
                 _number_of_elements++;
                 return true;
             } else {

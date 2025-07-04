@@ -7,7 +7,7 @@
 #include "../Iterator.hpp"
 template<typename K, typename V>
 class RB_Iterator: public Iterator<K, V> {
-    stack<RB_Node*> _stack;
+    stack<RB_Node<K, V>*> _stack;
     RB_Node<K, V>* _current;
     RB_Node<K, V>* NIL;
 
