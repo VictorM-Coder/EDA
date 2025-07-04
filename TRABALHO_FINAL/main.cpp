@@ -145,7 +145,7 @@ void medirTempoInsercao(const std::string& book, const std::vector<std::string>&
 }
 
 int main() {
-    const int total_tests = 10;
+    const int total_tests = 1000;
 
     medirTempoInsercao("The Secret Garden", FileUtils::readFile("/home/victor/Documentos/faculdade/EDA/TRABALHO_FINAL/entrada-livros/the-secret-garden.txt"), total_tests);
     medirTempoInsercao("Sherlock Holmes", FileUtils::readFile("/home/victor/Documentos/faculdade/EDA/TRABALHO_FINAL/entrada-livros/sherlock_holmes.txt"), total_tests);
