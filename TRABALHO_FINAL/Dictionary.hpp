@@ -69,5 +69,37 @@ public:
     }
     return nullptr;
 }
+    void printStatistics() const {
+        switch (type) {
+            case RB_TREE: {
+                cout << "- Estatísticas Arvore rubro-negra" << endl;
+                auto rb_tree = dynamic_cast<RB_Tree<string, size_t> *>(dictionary);
+                cout << "   Total de comparacoes: " << rb_tree->total_comparisons() << endl;
+                cout << "   Total de rotacoes: " << rb_tree->total_rotations() << endl;
+            }
+                break;
+            case AVL_TREE: {
+                cout << "- Estatísticas Arvore AVL" << endl;
+                auto avl_tree = dynamic_cast<AVL_Tree<string, size_t> *>(dictionary);
+                cout << "   Total de comparacoes: " << avl_tree->total_comparisons() << endl;
+                cout << "   Total de rotacoes: " << avl_tree->total_rotations() << endl;
+            }
+                break;
+            case OPEN_HT: {
+                cout << "- Estatísticas Tabela hash com enderecamento aberto" << endl;
+                auto open_hash = dynamic_cast<OpenHashTable<string, size_t> *>(dictionary);
+                cout << "   Total de comparacoes: " << open_hash->total_comparisons() << endl;
+                cout << "   Total de colisoes: " << open_hash->total_colisions() << endl;
+            }
+                break;
+            case CHAINED_HT: {
+                cout << "- Estatísticas Tabela hash com encadeamento externo" << endl;
+                auto chained_hash = dynamic_cast<ChainedHashTable<string, size_t> *>(dictionary);
+                cout << "   Total de comparacoes: " << chained_hash->total_comparisons() << endl;
+                cout << "   Total de colisoes: " << chained_hash->total_colisions() << endl;
+            }
+                break;
+        }
+    }
 
 };
