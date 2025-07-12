@@ -41,7 +41,7 @@ public:
     /**
      * @brief Construtor: cria uma tabela hash com um numero primo de slots a partir de um vector de pares.
      */
-    ChainedHashTable(const vector<pair<K, V>> &pairs, float load_factor = 1.0) {
+    ChainedHashTable(const vector<pair<K, V>> &pairs, float load_factor = 0.5) {
         _number_of_elements = 0;
         _count_comparisons = 0;
         _count_colisions = 0;
@@ -111,7 +111,9 @@ public:
         return _count_colisions;
     }
 
-
+    V& operator[](const K key) override {
+        return _insert_at(key);
+    }
 private:
     /**
      * @brief Busca o próximo número primo a partir do valor passado. Caso o valor passado seja par, soma-se mais um, para torná-lo impar antes de prosseguir.
@@ -205,6 +207,7 @@ private:
         size_t slot = _calc_hash_code(my_pair.first);
         for(auto &p : _table[slot]) {
             if(_equal(p.first, my_pair.first)) {
+                p.second = my_pair.second;
                 return;
             }
         }
@@ -236,5 +239,27 @@ private:
     bool _equal(const K& a, const K& b) {
         _count_comparisons++;
         return a == b;
+    }
+
+
+    V& _insert_at(const K key) {
+        if (_calc_load_factor() >= _max_load_factor) {
+            _rehash(2*_table_size);
+        }
+
+        size_t slot = _calc_hash_code(key);
+        for(auto &p : _table[slot]) {
+            if(_equal(p.first, key)) {
+                return p.second;
+            }
+        }
+
+        if (!_table[slot].empty()) {
+            _count_colisions++;
+        }
+
+         _table[slot].push_back({key, 0});
+        _number_of_elements++;
+        return _table[slot].back().second;
     }
 };

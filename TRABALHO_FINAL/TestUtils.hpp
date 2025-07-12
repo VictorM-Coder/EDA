@@ -17,7 +17,7 @@ using namespace std::chrono;
 class TestUtils {
 public:
     static void runPipeline() {
-        const int total_tests = 1;
+        const int total_tests = 10  ;
 
         cout << "CALCULO DO TEMPO" << endl;
         auto book_secret_garden = FileUtils::readFile("/home/victor/Documentos/faculdade/EDA/TRABALHO_FINAL/entrada-livros/the-secret-garden.txt");

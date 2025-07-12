@@ -19,7 +19,7 @@ class OpenHashTable : public IDataStruct<K, V> {
     size_t _count_colisions;
 
 public:
-    OpenHashTable(size_t tableSize = 19, float load_factor = 1.0) {
+    OpenHashTable(size_t tableSize = 19, float load_factor = 0.5) {
         _number_of_elements = 0;
         _count_colisions = 0;
         _count_comparisons = 0;
@@ -105,6 +105,9 @@ public:
         return _count_colisions;
     }
 
+    V& operator[](const K key) override {
+        return _insert_at(key);
+    }
 private:
     size_t _get(const K &key) {
         int slot = _find_slot(key);
@@ -127,7 +130,6 @@ private:
             if (_table[slot].status == ACTIVE) {
                 _count_comparisons++;
                 if (_equal(_table[slot].key, key)) {
-                    _table[slot].value = value;
                     return true;
                 }
                 _count_colisions++;
@@ -169,7 +171,10 @@ private:
     }
 
     size_t _calc_hash_code(const K& key, size_t index) const {
-        return (_hashing(key) + index) % _table_size;
+        size_t h1 =  _hashing(key) % _table_size;
+        size_t h2 = 1 + (_hashing(key) % (_table_size-1));
+
+        return (h1 + index*h2) % _table_size;
     }
 
     /**
@@ -222,5 +227,37 @@ private:
     bool _equal(const K& a, const K& b) {
         _count_comparisons++;
         return a == b;
+    }
+
+    V& _insert_at(const K key) {
+        if (_calc_load_factor() >= _max_load_factor) {
+            _rehash(2 * _table_size);
+        }
+
+        size_t first_deleted = SIZE_MAX;
+
+        for (size_t i = 0; i < _table_size; ++i) {
+            size_t slot = _calc_hash_code(key, i);
+
+            if (_table[slot].status == ACTIVE) {
+                _count_comparisons++;
+                if (_equal(_table[slot].key, key)) {
+                    return _table[slot].value;
+                }
+                _count_colisions++;
+            } else if (_table[slot].status == DELETED) {
+                if (first_deleted == SIZE_MAX) {
+                    first_deleted = slot;
+                }
+            } else {
+                size_t target = (first_deleted != SIZE_MAX ? first_deleted : slot);
+                _table[target].key = key;
+                _table[target].status = ACTIVE;
+                _table[target].value = 0;
+                _number_of_elements++;
+                return _table[target].value;
+            }
+        }
+        throw "error at finding a value or create a new one";
     }
 };

@@ -39,14 +39,23 @@ public:
         delete dictionary;
     }
 
-    void insert(string word) const {
-        if (dictionary->exists(word)) {
-            size_t count = dictionary->get(word).second;
-            dictionary->update(word, ++count);
-        } else {
-            dictionary->insert({word, 1});
+    void insert(const string word) {
+        switch (type) {
+            case RB_TREE:
+                ++(*dynamic_cast<RB_Tree<string, size_t>*>(dictionary))[word];
+                break;
+            case AVL_TREE:
+                ++(*dynamic_cast<AVL_Tree<string, size_t>*>(dictionary))[word];
+                break;
+            case OPEN_HT:
+                ++(*dynamic_cast<OpenHashTable<string, size_t>*>(dictionary))[word];
+                break;
+            case CHAINED_HT:
+                ++(*dynamic_cast<ChainedHashTable<string, size_t>*>(dictionary))[word];
+                break;
         }
     }
+
 
     std::unique_ptr<Iterator<string, size_t>> getIterator() {
     switch (type) {

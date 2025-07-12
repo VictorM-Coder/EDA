@@ -84,6 +84,10 @@ public:
         return _count_comparisons;
     }
 
+    V& operator[](const K key) override {
+        return _insert_at(key);
+    }
+
 private:
     /**
      *
@@ -385,4 +389,22 @@ private:
         _count_comparisons++;
         return a == b;
     }
+
+    V& _insert_at(const K key) {
+        RB_Node<K, V>* existing = _get(key);
+
+        if (existing != NIL) {
+            return existing->value;
+        }
+
+        _insert({key, 0});
+
+        RB_Node<K, V>* node = _get(key);
+        if (node == NIL) {
+            throw runtime_error("Error trying to insert a node in the rb");
+        }
+
+        return node->value;
+    }
+
 };

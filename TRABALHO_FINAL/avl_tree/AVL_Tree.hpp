@@ -80,6 +80,9 @@ public:
         return _count_comparisons;
     }
 
+    V& operator[](const K key) override {
+        return _insert_at(key);
+    }
 private:
     AVL_Node<K, V>* _insert_pair(pair<K, V> item_pair, AVL_Node<K, V>* node) {
         if (node == nullptr) {
@@ -281,5 +284,16 @@ private:
     bool _equal(const K& a, const K& b) {
         _count_comparisons++;
         return a == b;
+    }
+
+    V& _insert_at(const K key) {
+        _root = _insert_pair({key, 0}, _root);
+
+        AVL_Node<K, V> *node = _get(key, _root);
+        if (node == nullptr) {
+            throw runtime_error("Error trying to insert a node in the avl");
+        }
+
+        return node->value;
     }
 };

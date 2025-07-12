@@ -15,7 +15,7 @@ struct AVL_Node {
     AVL_Node(const K &key, const int height, const V value) {
         this->key = key;
         this->height = height;
-        this->value = 1;
+        this->value = value;
 
         this->left = nullptr;
         this->right = nullptr;
