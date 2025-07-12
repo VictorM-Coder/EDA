@@ -119,23 +119,29 @@ private:
             _rehash(2 * _table_size);
         }
 
-        int slot = _find_slot(key);
-
-        if (slot != -1) {
-            return true;
-        }
+        size_t first_deleted = SIZE_MAX;
 
         for (size_t i = 0; i < _table_size; ++i) {
-            size_t possible_slot = _calc_hash_code(key, i);
-            //Adiciona uma nova chave na tabela
-            if (_table[possible_slot].status != ACTIVE) {
-                _table[possible_slot] = Slot<K, V>({key, value}, ACTIVE);
+            size_t slot = _calc_hash_code(key, i);
+
+            if (_table[slot].status == ACTIVE) {
+                _count_comparisons++;
+                if (_equal(_table[slot].key, key)) {
+                    _table[slot].value = value;
+                    return true;
+                }
+                _count_colisions++;
+            } else if (_table[slot].status == DELETED) {
+                if (first_deleted == SIZE_MAX) {
+                    first_deleted = slot;
+                }
+            } else {
+                size_t target = (first_deleted != SIZE_MAX ? first_deleted : slot);
+                _table[target].key = key;
+                _table[target].value = value;
+                _table[target].status = ACTIVE;
                 _number_of_elements++;
                 return true;
-            } else {
-                if ((_table[possible_slot].key != key)) {
-                    _count_colisions++;
-                }
             }
         }
         return false;
@@ -156,7 +162,7 @@ private:
         while (index < _table_size) {
             size_t slot = _calc_hash_code(key, index);
             if (_table[slot].status == EMPTY) return -1;
-            if (_table[slot].status == ACTIVE && _equal(_table[slot].key, key)) return slot;
+            if (_table[slot].status == ACTIVE && _table[slot].key == key) return slot;
             ++index;
         }
         return -1;
