@@ -91,9 +91,7 @@ private:
 
         if (_equal(node->key, item_pair.first)) {
             return node;
-        }
-
-        if (_greater(item_pair.first, node->key)) {
+        } else if (_greater(item_pair.first, node->key)) {
             node->right = _insert_pair(item_pair, node->right);
         } else {
             node->left = _insert_pair(item_pair, node->left);
@@ -287,9 +285,13 @@ private:
     }
 
     V& _insert_at(const K key) {
-        _root = _insert_pair({key, 0}, _root);
+        AVL_Node<K, V>* node = _get(key, _root);
 
-        AVL_Node<K, V> *node = _get(key, _root);
+        if (node == nullptr) {
+            _root = _insert_pair({key, 0}, _root);
+        }
+
+        node = _get(key, _root);
         if (node == nullptr) {
             throw runtime_error("Error trying to insert a node in the avl");
         }
