@@ -58,25 +58,25 @@ public:
 
 
     std::unique_ptr<Iterator<string, size_t>> getIterator() {
-    switch (type) {
-        case RB_TREE:
-            return std::make_unique<RB_Iterator<string, size_t>>(
-                dynamic_cast<RB_Tree<string, size_t>*>(dictionary)->iterator()
-            );
-        case AVL_TREE:
-            return std::make_unique<AVL_Iterator<string, size_t>>(
-                dynamic_cast<AVL_Tree<string, size_t>*>(dictionary)->iterator()
-            );
-        case OPEN_HT:
-            return std::make_unique<OpenHashIterator<string, size_t>>(
-                dynamic_cast<OpenHashTable<string, size_t>*>(dictionary)->iterator()
-            );
-        case CHAINED_HT:
-            return std::make_unique<ChainedIterator<string, size_t>>(
-                dynamic_cast<ChainedHashTable<string, size_t>*>(dictionary)->iterator()
-            );
-    }
-    return nullptr;
+        switch (type) {
+            case RB_TREE:
+                return std::make_unique<RB_Iterator<string, size_t>>(
+                    dynamic_cast<RB_Tree<string, size_t>*>(dictionary)->iterator()
+                );
+            case AVL_TREE:
+                return std::make_unique<AVL_Iterator<string, size_t>>(
+                    dynamic_cast<AVL_Tree<string, size_t>*>(dictionary)->iterator()
+                );
+            case OPEN_HT:
+                return std::make_unique<OpenHashIterator<string, size_t>>(
+                    dynamic_cast<OpenHashTable<string, size_t>*>(dictionary)->iterator()
+                );
+            case CHAINED_HT:
+                return std::make_unique<ChainedIterator<string, size_t>>(
+                    dynamic_cast<ChainedHashTable<string, size_t>*>(dictionary)->iterator()
+                );
+        }
+        return nullptr;
 }
     void printStatistics() const {
         switch (type) {
@@ -111,4 +111,27 @@ public:
         }
     }
 
+    void update(const string& key, size_t value) {
+        dictionary->update(key, value);
+    }
+
+    pair<string, size_t> get(const string& key) {
+        return dictionary->get(key);
+    }
+
+    void remove(const string& key) {
+        dictionary->remove(key);
+    }
+
+    bool exists(const string& key) {
+        return dictionary->exists(key);
+    }
+
+    size_t size() {
+        return dictionary->size();
+    }
+
+    void clear() {
+        dictionary->clear();
+    }
 };
