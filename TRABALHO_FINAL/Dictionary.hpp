@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <algorithm>
 
 #include "IDataStruct.hpp"
 #include "avl_tree/AVL_Tree.hpp"
@@ -133,5 +134,30 @@ public:
 
     void clear() {
         dictionary->clear();
+    }
+
+    vector<pair<string, size_t>> get_ordered_vector() {
+        vector<pair<string, size_t>> ordered;
+        ordered.reserve(this->size());
+
+        auto it_ptr = getIterator();
+        if (!it_ptr) {
+            std::cerr << "Iterator is null!" << std::endl;
+            return {};
+        }
+
+        auto it = it_ptr.get();
+        while (it->hasNext()) {
+            ordered.push_back(it->next());
+        }
+
+        if (type == CHAINED_HT || type == OPEN_HT) {
+            std::sort(ordered.begin(), ordered.end(),
+                 [](const pair<string, size_t>& a, const pair<string, size_t>& b) {
+                     return a.first < b.first;
+                 });
+        }
+
+        return ordered;
     }
 };

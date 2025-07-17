@@ -30,7 +30,7 @@ public:
         return words;
     }
 
-    static void write_file(Iterator<std::string, size_t> & it, const std::string& name) {
+    static void write_file(const std::vector<std::pair<std::string, size_t>>& words, const std::string& name) {
         std::ofstream my_file(name + ".txt");
 
         if (!my_file) {
@@ -38,8 +38,7 @@ public:
             return;
         }
 
-        while (it.hasNext()) {
-            std::pair<std::string, size_t> word = it.next();
+        for (const auto& word: words) {
             my_file << word.first << " " <<  word.second << std::endl;
         }
 

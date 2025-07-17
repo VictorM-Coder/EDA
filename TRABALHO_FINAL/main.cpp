@@ -38,8 +38,7 @@ int main(int argc, char* argv[]) {
         dict.insert(word);
     }
 
-    auto it = dict.getIterator();
-    FileUtils::write_file(*it, nameToWrite);
+    FileUtils::write_file(dict.get_ordered_vector(), nameToWrite);
 
     return 0;
 }
